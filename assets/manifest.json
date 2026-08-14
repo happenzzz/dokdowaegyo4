@@ -1,0 +1,134 @@
+[
+  {
+    "file": "assets/characters-main.png",
+    "mime": "image/png",
+    "bytes": 1059113,
+    "sha256": "6c825a2546c50d92170609020e9ed371dc62096872223f1c2a1f48250f25e6c2"
+  },
+  {
+    "file": "assets/characters-support.png",
+    "mime": "image/png",
+    "bytes": 1089597,
+    "sha256": "6b7aaa5bcf2cd73cef7438249227dcab1fd1df8b9c97e8463c1a3f2140775cdb"
+  },
+  {
+    "file": "assets/portraits-main.png",
+    "mime": "image/png",
+    "bytes": 1885663,
+    "sha256": "6212c855780f6b658f18dd05e122e807d1623059397f5abb28c0526cc8284deb"
+  },
+  {
+    "file": "assets/portraits-support.png",
+    "mime": "image/png",
+    "bytes": 1810307,
+    "sha256": "4122ceb90069defc7483c387189412781bd35b8177c3c63f146b39fcf5340a49"
+  },
+  {
+    "file": "assets/portraits-modern.png",
+    "mime": "image/png",
+    "bytes": 1774724,
+    "sha256": "42be4f75a08a9bcc5b3c86127822c2a03061f2bc252678afee3116db665377d3"
+  },
+  {
+    "file": "assets/portraits-ports.png",
+    "mime": "image/png",
+    "bytes": 1867136,
+    "sha256": "68a2e1e6b6243aa519b612bc45c73660a5224aca09e66466f7a88158f1543e61"
+  },
+  {
+    "file": "assets/time-compass.png",
+    "mime": "image/png",
+    "bytes": 1204156,
+    "sha256": "f17a02401ee8273a4765f227720be4ad95c58b757320033b83f6fd00159d9952"
+  },
+  {
+    "file": "assets/japanese-official-full.png",
+    "mime": "image/png",
+    "bytes": 768960,
+    "sha256": "74ac71541b1970de8aaea4025b57489267c7b65439521619ede3460cb2f5375e"
+  },
+  {
+    "file": "assets/japanese-official-portrait.png",
+    "mime": "image/png",
+    "bytes": 1127560,
+    "sha256": "0a1e4296784bcde41f8cbe7b2970b6d4fba7708f023d6de9b2df32fdf5c847f1"
+  },
+  {
+    "file": "assets/ship-player.png",
+    "mime": "image/png",
+    "bytes": 1457342,
+    "sha256": "a35c2916ec78df50bb75553b01ce7ce5c6549cc5058fb0f20103677b0219d130"
+  },
+  {
+    "file": "assets/ship-npc.png",
+    "mime": "image/png",
+    "bytes": 890469,
+    "sha256": "538821bcdb40048f34ceb17078ac675702d438abe8a707ae0ab0c809ab3c3def"
+  },
+  {
+    "file": "assets/creature-atlas.png",
+    "mime": "image/png",
+    "bytes": 819712,
+    "sha256": "fce7d92edfbd9cef5ad52d90bc4b3b187b0a8b39179a3b810e65604864ce866c"
+  },
+  {
+    "file": "assets/school-intro.png",
+    "mime": "image/png",
+    "bytes": 669019,
+    "sha256": "613523be9e09e0c7ec615941877a7a533dc05f5d4e43bfc19b5c67bfc532fafe"
+  },
+  {
+    "file": "assets/modern-characters-atlas.png",
+    "mime": "image/png",
+    "bytes": 793006,
+    "sha256": "8a35b73a9f47c67028de20c62f44c3671fd8d2f15c7ecbe3851e968752a9f9ad"
+  },
+  {
+    "file": "assets/port-characters-atlas.png",
+    "mime": "image/png",
+    "bytes": 927826,
+    "sha256": "95467e033f3ba92752775ac9e2643901ef082de4a72feedfa3d38b617d7d113e"
+  },
+  {
+    "file": "assets/legend-characters-atlas.png",
+    "mime": "image/png",
+    "bytes": 1706255,
+    "sha256": "5c2065b6c4c65300a192f62104c92331927188b1a1216a82f5692523ebed6121"
+  },
+  {
+    "file": "assets/an-yong-bok-memorial.png",
+    "mime": "image/png",
+    "bytes": 778314,
+    "sha256": "5477e38e3e763ae5ddc9456a519cbd969bae21d2692c0ab70ddc88d9abcac8ae"
+  },
+  {
+    "file": "assets/busan-dock.png",
+    "mime": "image/png",
+    "bytes": 1672475,
+    "sha256": "5ce578bdee515bbf4f15ca59970e9ffc4afae6c1de5f2714cf63ad5acb88c754"
+  },
+  {
+    "file": "assets/dokdo-natural-map.webp",
+    "mime": "image/webp",
+    "bytes": 219294,
+    "sha256": "a55fd4f42a6186b57af9979cb284765024e996ca7916cacc33bfff6e4a88c357"
+  },
+  {
+    "file": "assets/jasando-distant-view.webp",
+    "mime": "image/webp",
+    "bytes": 130962,
+    "sha256": "be095152dfaaf42855d164a13c54fc63bd7d5bb086fd499e711af7ab2eaccc67"
+  },
+  {
+    "file": "assets/dokdo-ecology-atlas.webp",
+    "mime": "image/webp",
+    "bytes": 928236,
+    "sha256": "4708a87621bbbdafcf8a13fb96d5a43b6855df016fd09b98881a165f57959ea7"
+  },
+  {
+    "file": "assets/historical-evidence-atlas.webp",
+    "mime": "image/webp",
+    "bytes": 1471500,
+    "sha256": "74234b08fbf94ffc939e293a4e312f55bfec674014d0a7ff02ea6fdcbe325c05"
+  }
+]

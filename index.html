@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>독도 시간탐험대 — 안용복과 함께하는 독도 수호대</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="stylesheet" href="css/google-fonts.css">
+<link rel="stylesheet" href="css/pretendard.css">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<div id="stage">
+  <section id="school-intro" aria-label="부산교육대학교 부설초등학교 인트로" title="눌러서 건너뛰기">
+    <img id="school-intro-image" class="school-intro-image" alt="부산교육대학교 부설초등학교" src="assets/school-intro.png">
+  </section>
+  <canvas id="game" width="2560" height="1270"></canvas>
+  <div id="night-filter" aria-hidden="true" style="opacity: 0;"></div>
+  <div id="time-warp" aria-hidden="true"></div>
+
+  <div class="layer">
+    <!-- 상단 -->
+    <div id="topbar" class="hide">
+      <div class="time-panel"><small id="era-label">현장체험학습 · 오늘</small><b id="date-label">2026년 8월 2일</b><span id="clock-label">오전 10:00</span></div>
+      <div class="place"><small id="pl-k">지 금 여 기</small><span id="pl-n">부산포</span></div>
+      <div class="tb-right">
+        <button class="ibtn" id="b-full">전체화면</button>
+        <button class="ibtn" id="b-dex">도감</button>
+        <button class="ibtn" id="b-title">처음</button>
+      </div>
+    </div>
+    <div id="quest" class="hide"><b>임 무</b><span id="q-t"></span></div>
+
+    <!-- 계기판 -->
+    <div id="gauge" class="hide">
+      <div class="grow"><span class="k">풍향</span><span class="dial" id="d-wind"><i></i><b></b></span><span class="v" id="v-wind">3</span></div>
+      <div class="grow"><span class="k">침로</span><span class="dial" id="d-head"><i></i><b></b></span><span class="v" id="v-head">―</span></div>
+      <div class="grow"><span class="k">속도</span><span class="v" id="v-spd">0 노트</span></div>
+      <div class="grow"><span class="k">일수</span><span class="v" id="v-day">0</span></div>
+      <div class="grow"><span class="k">항로</span><span class="meter"><i id="m-route"></i></span><span class="v" id="v-route" style="font-size:13px">0%</span></div>
+      <div class="grow"><span class="k">선체</span><span class="meter hull"><i id="m-hull"></i></span><span class="v" id="v-hull" style="font-size:13px">100</span></div>
+      <div class="grow" style="margin-bottom:0"><span class="k">돛</span><span class="v" id="v-sail" style="font-size:13px">펼침</span></div>
+    </div>
+    <div id="sea-hint" class="hide">방향키: 침로 · 돛 조절: 감속 · 황금빛 항구 표지가 뜨면 입항 가능</div>
+    <div id="voyage-state" class="hide">
+      <div class="voyage-title"><b>선박 상태</b><small>補 給 品</small></div>
+      <div class="supply-row water" id="water-row"><span>식수</span><span class="supply-track"><i id="m-water"></i></span><strong id="v-water">0</strong></div>
+      <div class="supply-row food" id="food-row"><span>식량</span><span class="supply-track"><i id="m-food"></i></span><strong id="v-food">0</strong></div>
+      <div class="crew-line" id="v-crew">승선원 8명 · 하루 식수 6 / 식량 4 소모</div>
+    </div>
+    <div id="sea-commands" class="hide">
+      <button class="sea-cmd" id="chart-btn">항로도 확대</button>
+      <button class="sea-cmd" id="dock-btn" disabled="">입항 불가</button>
+    </div>
+
+    <!-- 조작 -->
+    <div id="pad" class="hide">
+      <div class="pk u" data-d="u">▲</div><div class="pk d" data-d="d">▼</div>
+      <div class="pk l" data-d="l">◀</div><div class="pk r" data-d="r">▶</div>
+    </div>
+    <button id="abtn" class="hide">말걸기</button>
+
+    <!-- 대사 -->
+    <div id="dbox" class="hide">
+      <div class="dbox-in">
+        <div class="portrait" id="portrait"></div>
+        <div class="dtext"><span class="dname" id="dname"></span><div class="dline" id="dline"></div></div>
+        <span class="dnext">▼</span>
+      </div>
+    </div>
+    <div id="choices" class="hide"></div>
+    <div id="rec" class="hide"></div>
+    <div id="memory-stage" class="hide" aria-label="1693년 울릉도 회상 장면"></div>
+    <div id="jasan-stage" class="hide" aria-label="울릉도에서 바라본 자산도 원경"></div>
+    <div id="stamp" class="hide"></div>
+    <div id="catch" class="hide"></div>
+    <div id="debate" class="hide"></div>
+    <div id="dex" class="hide" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="dex-title"></div>
+    <div id="ending" class="hide"></div>
+    <div id="arrival" class="hide"></div>
+    <div id="prep" class="sea-modal hide"></div>
+    <div id="port" class="sea-modal hide"></div>
+    <div id="gameover" class="sea-modal hide"></div>
+    <div id="flash"></div>
+  </div>
+
+  <!-- 타이틀 -->
+  <section id="title">
+    <div class="title-cast" aria-hidden="true"><div class="title-figure yb" id="title-yb"></div><div class="title-figure me" id="title-me"></div></div>
+    <div class="t-wrap">
+      <div class="t-seal">獨島</div>
+      <div class="t-sub">1 6 9 6 · 東 海</div>
+      <h1>독도 시간탐험대</h1>
+      <div class="t-line"></div>
+      <p class="t-tag">안용복과 함께하는 독도 수호대</p>
+      <label class="t-lbl" for="pname">대원 이름을 적으시오</label>
+      <input id="pname" maxlength="10" placeholder="이름" autocomplete="off">
+      <div class="t-btns">
+        <button class="btn red" id="b-start">시간문 열기</button>
+        <button class="btn ghost" id="b-dex0">도감</button>
+      </div>
+      <p class="t-foot">방향키 또는 화면 十자로 이동 · 스페이스/말걸기로 대화<br>가로 화면을 권합니다</p>
+    </div>
+  </section>
+</div>
+<section id="print-pack" aria-hidden="true"></section>
+
+<script src="js/game.js"></script>
+
+
+</body></html>
