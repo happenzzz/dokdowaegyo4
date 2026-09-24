@@ -1,16 +1,16 @@
 "use strict";
 /* ==========================================================
-   독도 시간탐험대 v15 · 인물 크기 보정 · 항해 최적화 · 생태 조사 게임 · 논박 자료 확대 · 기항 안내
+   독도 시간탐험대 v16 · 걷기·생물 조사 최적화 · 양양 포구 · 생물 조사 난이도 복구
    ========================================================== */
 const $=s=>document.querySelector(s);
-const cv=$("#game"), g=cv.getContext("2d");
+const cv=$("#game"), g=cv.getContext("2d",{alpha:false});
 let VW=0,VH=0,DPR=1,DPR_CAP=2;
 function setDprCap(c){if(DPR_CAP!==c){DPR_CAP=c;fit();}}
 function fit(){
   DPR=Math.min(DPR_CAP,window.devicePixelRatio||1);
   VW=cv.clientWidth; VH=cv.clientHeight;
   cv.width=VW*DPR; cv.height=VH*DPR; g.setTransform(DPR,0,0,DPR,0,0);
-  g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality="medium";
 }
 addEventListener("resize",fit);
 
@@ -67,7 +67,7 @@ Object.entries(EXTRA_ASSETS).forEach(([k,src])=>{const im=new Image();im.src=src
 {const im=new Image();im.src=STATUE_ASSET;SPRITE_IMAGES.statue=im;}
 /* v13 · 새 주인공 걷기 스프라이트와 장면 배경 */
 const PLAYER_WALK_ASSET="assets/player-walk.png";
-const MAP_BG={suyeong:"assets/bg-suyeong.webp",busan:"assets/bg-busan.webp",oki:"assets/bg-oki-gate.webp",okicastle:"assets/bg-oki-hall.webp",busan2:"assets/bg-dongnae.webp"};
+const MAP_BG={suyeong:"assets/bg-suyeong.webp",busan:"assets/bg-busan.webp",oki:"assets/bg-oki-gate.webp",okicastle:"assets/bg-oki-hall.webp",busan2:"assets/bg-dongnae.webp",yangyang:"assets/bg-yangyang.webp"};
 const DEPART_BG="assets/bg-departure.webp",CHART_BG="assets/bg-seachart.webp";
 {const im=new Image();im.src=PLAYER_WALK_ASSET;SPRITE_IMAGES.playerWalk=im;}
 Object.entries(MAP_BG).forEach(([k,src])=>{const im=new Image();im.src=src;SPRITE_IMAGES["bg_"+k]=im;});
@@ -101,7 +101,7 @@ function renderClock(){
   const date=`${CLOCK.year}년 ${CLOCK.month}월 ${CLOCK.day}일`,ampm=CLOCK.hour<12?"오전":"오후",hh=CLOCK.hour%12||12,time=`${ampm} ${hh}:${pad2(CLOCK.minute)}`;
   const signature=`${date}|${time}|${eraForYear(CLOCK.year)}`;if(signature!==CLOCK.last){CLOCK.last=signature;$("#era-label").textContent=eraForYear(CLOCK.year);$("#date-label").textContent=date;$("#clock-label").textContent=time;}
   const h=CLOCK.hour+CLOCK.minute/60;let darkness=0;if(h>=18.5)darkness=Math.min(.60,(h-18.5)*.105);else if(h<6.5)darkness=Math.min(.60,(6.5-h)*.105);
-  $("#night-filter").style.opacity=darkness.toFixed(2);$("#stage").classList.toggle("night",darkness>.09);
+  const nf=$("#night-filter");nf.style.opacity=darkness.toFixed(2);nf.style.display=darkness>.005?"":"none";$("#stage").classList.toggle("night",darkness>.09);
 }
 function setGameClock(y,m,d,h,min=0){Object.assign(CLOCK,{year:y,month:m,day:d,hour:h,minute:min,carry:0,last:""});normalizeClock();renderClock();}
 function advanceGameMinutes(minutes){
@@ -164,7 +164,11 @@ const PORTRAIT_SPRITES={
   ho:["portrait2",2],jf:["portrait3",1],jg:["portrait3",1],jk:["jkPortrait",0,1,1],gw:["portrait3",2],
   np:["portrait4",0],hj:["portrait4",1],jv:["portrait4",2]
 };
+CH.gy={...CH.gw,n:"양양 관아 관원"};CH.yv={...CH.np,n:"양양 관아 포졸"};CH.ym={...CH.hj,n:"양양 포구 어민"};
+FULL_SPRITES.gy=FULL_SPRITES.gw;FULL_SPRITES.yv=FULL_SPRITES.np;FULL_SPRITES.ym=FULL_SPRITES.hj;
+PORTRAIT_SPRITES.gy=PORTRAIT_SPRITES.gw;PORTRAIT_SPRITES.yv=PORTRAIT_SPRITES.np;PORTRAIT_SPRITES.ym=PORTRAIT_SPRITES.hj;
 function portraitColumn(k,m,t){
+  k={gy:"gw",yv:"np",ym:"hj"}[k]||k;
   const s=`${m||""} ${t||""}`;
   if(k==="yb") return /웃|허허|픽/.test(s)?2:/노기|호통|분노|눈이 좁|단호|남의 바다/.test(s)?1:0;
   if(k==="me"&&m==="동상을 올려다보며") return 0;
@@ -391,6 +395,27 @@ okicastle:{name:"오키섬 성 안 · 관청 접견실",sub:"隱 岐 · 성 안"
   "#######....#....#....#######",
   "############################"],
   spawn:[14,12]},
+yangyang:{name:"양양 포구 · 강원도",sub:"襄 陽 · 강 원 도",bg:true,fig:1,npcFig:1,
+  rows:[
+  "################################",
+  "################################",
+  "################################",
+  "################################",
+  "################################",
+  "##############..............####",
+  "#############................###",
+  "#############.................##",
+  "###...........................##",
+  "###...........................##",
+  "#############.................##",
+  "#############.................##",
+  "#############.................##",
+  "#############.................##",
+  "#############.................##",
+  "#############................###",
+  "################################",
+  "################################"],
+  spawn:[5,8]},
 busan2:{name:"동래성 · 귀항",sub:"東 萊 城 · 조 정 의 조 사",bg:true,fig:1.02,npcFig:1.1,
   rows:[
   "############################",
@@ -484,6 +509,15 @@ function resetEntities(){
     {id:"nh",ch:"nh",tx:16,ty:9,dir:"u",talk:"chat_nh_oki"},
     {id:"yi",ch:"yi",tx:10,ty:10,dir:"u",talk:"chat_yi_oki"}
   ],
+  yangyang:[
+    {id:"gy",ch:"gy",tx:20,ty:8,dir:"l",talk:"trial"},
+    {id:"nh",ch:"nh",tx:21,ty:7,dir:"l",talk:"chat_nh_trial"},
+    {id:"yv1",ch:"yv",tx:19,ty:6,dir:"l",talk:"chat_yangyang_po"},
+    {id:"yv2",ch:"yv",tx:21,ty:10,dir:"l",talk:"chat_yangyang_po"},
+    {id:"ym",ch:"ym",tx:26,ty:12,dir:"l",talk:"chat_yangyang_fisher",wander:1},
+    {id:"yb",ch:"yb",tx:6,ty:9,dir:"r",talk:"chat_yb_trial"},
+    {id:"yi",ch:"yi",tx:4,ty:9,dir:"r",talk:"chat_yi_trial"}
+  ],
   busan2:[
     {id:"gw",ch:"gw",tx:12,ty:13,talk:"trial",baked:1},
     {id:"gate_guard",tx:19,ty:10,talk:"chat_dongnae_guard",baked:1},
@@ -531,7 +565,8 @@ function hydrateAtlasSprites(root=document){
    필드(걷기)
    ========================================================== */
 const P={map:"suyeong",px:0,py:0,dir:"d",moving:false,tx:0,ty:0,fx:0,fy:0,anim:0};
-const CAM={snap:true,map:""};
+const CAM={snap:true,map:"",ease:0,dbH:150,extra:0};
+const BGC={key:"",c:null,f:1};
 const keys={};
 const padDir={u:0,d:0,l:0,r:0};
 function resetInput(){
@@ -608,23 +643,34 @@ function drawField(){
   const sw=VW/scale, sh=VH/scale;
   const fx=(WALK?WALK.e.px:P.px)+T/2, fy=(WALK?WALK.e.py:P.py)+T/2;
   // 대화 중에는 아래 대사창에 가려지는 만큼 화면을 더 내려, 맨 아래 줄의 인물도 보이게 한다
-  const db=$("#dbox"),extra=(G.mode==="talk"&&db&&!db.classList.contains("hide"))||WALK?Math.min(sh*.4,(db.offsetHeight||150)/scale):0;
+  const db=$("#dbox"),talkOpen=(G.mode==="talk"&&db&&!db.classList.contains("hide"))||!!WALK;
+  if(talkOpen&&(TICK%20===0||!CAM.dbH))CAM.dbH=db.offsetHeight||150;
+  const extra=talkOpen?Math.min(sh*.4,CAM.dbH/scale):0;
+  if(extra!==CAM.extra){CAM.extra=extra;CAM.ease=450;}
   let tx=Math.max(0,Math.min(mw-sw, fx-sw/2)), ty=Math.max(0,Math.min(mh-sh+extra, fy-sh/2+extra*.5));
   if(mw<sw) tx=(mw-sw)/2; if(mh<sh) ty=(mh-sh)/2;
-  if(CAM.snap||CAM.map!==P.map){camX=tx;camY=ty;CAM.snap=false;CAM.map=P.map;}
-  else{camX+=(tx-camX)*.2;camY+=(ty-camY)*.2;}
+  /* 카메라: 평소에는 주인공을 곧바로 따라가고(끊김 없음), 장면 연출 때만 부드럽게 옮긴다 */
+  if(CAM.snap||CAM.map!==P.map){camX=tx;camY=ty;CAM.snap=false;CAM.map=P.map;CAM.ease=0;}
+  else if(WALK||CAM.ease>0){const a=1-Math.pow(.8,FRAME_DT/STEP_MS);camX+=(tx-camX)*a;camY+=(ty-camY)*a;if(!WALK)CAM.ease=Math.max(0,CAM.ease-FRAME_DT);}
+  else{camX=tx;camY=ty;}
+  const kpx=scale*DPR;camX=Math.round(camX*kpx)/kpx;camY=Math.round(camY*kpx)/kpx; // 화면 픽셀에 맞춰 흔들림 없이
   g.save(); g.scale(scale,scale); g.translate(-camX,-camY);
   g.fillStyle="#0b2230"; g.fillRect(camX,camY,sw,sh);
   const x0=Math.max(0,(camX/T|0)-1), x1=Math.min(rows[0].length,(camX+sw)/T+2|0);
   const y0=Math.max(0,(camY/T|0)-1), y1=Math.min(rows.length,(camY+sh)/T+2|0);
-  const bgIm=m.bg?SPRITE_IMAGES["bg_"+P.map]:null;
-  const scenic=P.map==="dokdo"?SPRITE_IMAGES.dokdoBg:null;
-  if(bgIm&&bgIm.complete&&bgIm.naturalWidth){
-    g.imageSmoothingEnabled=true;g.imageSmoothingQuality="high";g.drawImage(bgIm,0,0,mw,mh);g.imageSmoothingEnabled=true;
-  }else if(scenic&&scenic.complete&&scenic.naturalWidth){
-    g.drawImage(scenic,0,0,mw,mh);
-    g.fillStyle="rgba(3,44,78,.08)";g.fillRect(0,0,mw,mh);
-    g.fillStyle="rgba(220,248,255,.35)";for(let i=0;i<65;i++){const x=(i*137+TICK*1.7)%mw,y=(i*71+(i%5)*29)%mh;g.fillRect(x,y,3+(i%3)*2,2);}
+  const bc=fieldBgCanvas(m,mw,mh,scale);
+  if(bc){
+    /* 배경은 화면 배율로 한 번만 줄여 둔 그림을 그대로 옮겨 찍는다(매 프레임 큰 그림을 다시 줄이지 않음) */
+    g.save();g.setTransform(1,0,0,1,0,0);
+    /* 보이는 부분만 잘라 옮긴다 */
+    const r=bc.f/kpx,dw=Math.round(VW*DPR),dh=Math.round(VH*DPR);
+    let sx=camX*bc.f,sy=camY*bc.f,sw=dw*r,sh=dh*r,dx=0,dy=0,ddw=dw,ddh=dh;
+    if(sx<0){dx=-sx/r;ddw-=dx;sw+=sx;sx=0;} if(sy<0){dy=-sy/r;ddh-=dy;sh+=sy;sy=0;}
+    if(sx+sw>bc.c.width){const o=sx+sw-bc.c.width;sw-=o;ddw-=o/r;} if(sy+sh>bc.c.height){const o=sy+sh-bc.c.height;sh-=o;ddh-=o/r;}
+    const same=Math.abs(r-1)<1e-3;g.imageSmoothingEnabled=!same;g.imageSmoothingQuality="low";
+    if(sw>0&&sh>0)g.drawImage(bc.c,Math.round(sx),Math.round(sy),same?Math.round(ddw):sw,same?Math.round(ddh):sh,Math.round(dx),Math.round(dy),Math.round(ddw),Math.round(ddh));
+    g.restore();g.imageSmoothingEnabled=true;g.imageSmoothingQuality="medium";
+    if(P.map==="dokdo"){g.fillStyle="rgba(220,248,255,.35)";for(let i=0;i<65;i++){const x=(i*137+TICK*1.7)%mw,y=(i*71+(i%5)*29)%mh;g.fillRect(x,y,3+(i%3)*2,2);}}
   }else{
     for(let y=y0;y<y1;y++) for(let x=x0;x<x1;x++) drawTile(rows[y][x],x,y);
   }
@@ -632,7 +678,7 @@ function drawField(){
   ents.push({player:true,tx:P.tx,ty:P.ty});
   ents.sort((a,b)=>(a.ty+(a.h||1))-(b.ty+(b.h||1)));
   ents.forEach(e=>{
-    if(e.player){ if(P.map==="dokdo")drawDokdoBoatPlayer(); else if(!drawPlayerSprite(P.px,P.py,P.dir,P.moving?1+((P.anim/7|0)%4):0)) drawPerson(P.px,P.py,"me",P.dir,P.moving?((TICK/8|0)%2):0); }
+    if(e.player){ if(P.map==="dokdo")drawDokdoBoatPlayer(); else if(!drawPlayerSprite(P.px,P.py,P.dir,P.moving?1+((P.walk/20|0)%4):0)) drawPerson(P.px,P.py,"me",P.dir,P.moving?((TICK/8|0)%2):0); }
     else if(e.baked){ if(e.obj) drawMapObject(e); }
     else if(e.cr) drawCreature(e);
     else if(e.obj) drawMapObject(e);
@@ -657,6 +703,18 @@ function drawField(){
     }
   }
   g.restore();
+}
+function fieldBgCanvas(m,mw,mh,scale){
+  const im=m.bg?SPRITE_IMAGES["bg_"+P.map]:(P.map==="dokdo"?SPRITE_IMAGES.dokdoBg:null);
+  if(!im||!im.complete||!im.naturalWidth)return null;
+  const want=scale*DPR,f=Math.min(want,Math.sqrt(12.5e6/(mw*mh))),key=P.map+"|"+f.toFixed(4);
+  if(BGC.key!==key){
+    const c=document.createElement("canvas");c.width=Math.round(mw*f);c.height=Math.round(mh*f);
+    const x=c.getContext("2d",{alpha:false});x.imageSmoothingEnabled=true;x.imageSmoothingQuality="high";x.drawImage(im,0,0,c.width,c.height);
+    if(P.map==="dokdo"){x.fillStyle="rgba(3,44,78,.08)";x.fillRect(0,0,c.width,c.height);}
+    BGC.key=key;BGC.c=c;BGC.f=f;
+  }
+  return BGC;
 }
 function drawPlayerSprite(px,py,dir,frame){
   const im=SPRITE_IMAGES.playerWalk;if(!im||!im.complete||!im.naturalWidth)return false;
@@ -912,7 +970,8 @@ const SEAPT={
   busan:{n:"부산포",x:.167,y:.797},
   ulleung:{n:"울릉도",x:.459,y:.100},
   dokdo:{n:"자산도(독도)",x:.578,y:.156},
-  oki:{n:"오키섬",x:.795,y:.446}
+  oki:{n:"오키섬",x:.795,y:.446},
+  yangyang:{n:"양양",x:.219,y:.290}
 };
 const OKIISL=[[.828,.478,.030],[.795,.512,.018],[.845,.520,.016],[.862,.470,.012]];
 
@@ -943,6 +1002,8 @@ const PORTS={
     story:"울릉도와 마주 보는 강원도 남쪽 연안입니다. 북동쪽으로 나아갈수록 육지는 멀어지고 큰 파도가 배를 밀어냅니다.",fact:"울릉도로 건너가는 뱃길은 바람이 바뀌면 육지가 보이지 않는 먼바다가 됩니다."},
   gangneung:{n:"강릉 연안",short:"강릉",x:.243,y:.355,labelX:.145,labelY:.355,dockable:true,host:"gn",hostLine:"여기는 강릉항입니다. 해안 산줄기와 별을 보고 울릉도 가는 길을 가늠해 보우야.",
     story:"강원도 동해안의 큰 고을 앞바다입니다. 해안 산줄기와 별자리를 함께 보며 침로를 바로잡을 수 있습니다.",fact:"자산도는 당시 행정상 울릉도와 함께 강원도에 속한 섬으로 인식되었습니다."},
+  yangyang:{n:"양양 포구",short:"양양",x:.219,y:.290,labelX:.13,labelY:.29,dockable:true,
+    story:"설악의 산줄기 아래 자리한 강원도 양양의 포구입니다. 실제 역사에서 안용복 일행은 1696년 일본에서 돌아와 이곳 양양에 닿았습니다.",fact:"울릉도와 자산도는 당시 강원도에 딸린 섬이었기에, 강원도 관아가 이 일을 맡았습니다."},
   ulleung:{n:"울릉도 포구",short:"울릉도",x:.459,y:.100,dockable:true,
     story:"성인봉이 솟은 울릉도입니다. 맑은 날에는 동남쪽 수평선 너머 자산도를 바라볼 수 있습니다.",fact:"울릉도와 독도의 거리는 약 87km입니다."},
   dokdo:{n:"자산도 바위섬",short:"독도",x:.578,y:.156,dockable:false,
@@ -968,7 +1029,8 @@ const LEGS=[
   {from:"busan",to:"ulleung",title:"울릉도로 항해하시오",arrival:"울릉도",desc:"성인봉이 구름 사이로 모습을 드러낸다",after:"leg_ulleung"},
   {from:"ulleung",to:"dokdo",title:"자산도(독도)로 항해하시오",arrival:"자산도(독도)",desc:"동도와 서도의 바위 절벽에 파도가 부서진다",after:"leg_dokdo"},
   {from:"dokdo",to:"oki",title:"낯선 왜선을 쫓으시오",arrival:"오키섬",desc:"낯선 항구의 배들이 하나둘 눈에 들어온다",after:"leg_oki",chase:true},
-  {from:"oki",to:"busan",title:"부산포로 돌아가시오",arrival:"부산포",desc:"긴 항해 끝에 조선의 산줄기가 보인다",after:"leg_home"}
+  {from:"oki",to:"busan",title:"부산포로 돌아가시오",arrival:"부산포",desc:"긴 항해 끝에 조선의 산줄기가 보인다",after:"leg_home"},
+  {from:"busan",to:"yangyang",title:"강원도 양양으로 항해하시오",arrival:"양양 포구",desc:"설악의 봉우리 아래 작은 포구가 보인다",after:"leg_yangyang",curve:-1}
 ];
 
 function voyageEstimate(i){
@@ -1112,7 +1174,7 @@ function updateDockControl(){
   if(SEA.nearDock){b.disabled=false;b.classList.add("ready");b.textContent="입항 · "+SEA.nearDock.p.short;}
   else{b.disabled=true;b.classList.remove("ready");b.textContent="입항 불가";}
 }
-const PORT_CALL_NAME={busan:"부산포",ulsan:"울산 개운포",gyeongju:"경주 감포항",pohang:"포항 영일만",uljin:"울진항",gangneung:"강릉항",ulleung:"울릉도 포구"};
+const PORT_CALL_NAME={yangyang:"양양 포구",busan:"부산포",ulsan:"울산 개운포",gyeongju:"경주 감포항",pohang:"포항 영일만",uljin:"울진항",gangneung:"강릉항",ulleung:"울릉도 포구"};
 function promptPortCall(key){
   const nm=PORT_CALL_NAME[key]||PORTS[key].n;SEA.active=false;SEA.spd=0;SEA.promptSkip=key;resetInput();updateGauge(0,true);
   play(sq(
@@ -1443,7 +1505,7 @@ function drawLocalLand(){
 
 function drawCoastLabels(){
   g.save();g.textAlign="center";g.font="800 15px Pretendard,sans-serif";
-  for(const key of ["ulsan","gyeongju","pohang","uljin","gangneung"]){
+  for(const key of ["ulsan","gyeongju","pohang","uljin","gangneung","yangyang"]){
     const p=PORTS[key],q=seaPoint(p.labelX,p.labelY);if(q[0]<-80||q[0]>VW+80||q[1]<-40||q[1]>VH+40)continue;
     const w=g.measureText(p.short).width+22;g.fillStyle="rgba(35,55,38,.84)";g.fillRect(q[0]-w/2,q[1]-14,w,25);
     g.strokeStyle="#18251a";g.lineWidth=2;g.strokeRect(q[0]-w/2,q[1]-14,w,25);g.fillStyle="#f3e2b7";g.fillText(p.short,q[0],q[1]+4);
@@ -1675,7 +1737,7 @@ function updateWalk(){
   if(d>w.sp){e.px+=dx/d*w.sp;e.py+=dy/d*w.sp;e.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?"l":"r"):(dy<0?"u":"d");return;}
   e.px=gx;e.py=gy;w.pts.shift();if(w.pts.length)return;
   e.tx=p[0];e.ty=p[1];delete e.px;delete e.py;e.walking=false;if(w.face)e.dir=w.face;
-  WALK=null;G.inputLock=false;$("#dbox").classList.remove("hide");step();
+  WALK=null;CAM.ease=500;G.inputLock=false;$("#dbox").classList.remove("hide");step();
 }
 function showBanner(t){const b=$("#scene-banner");if(!b)return;if(!t){b.classList.add("hide");return;}b.textContent=t;b.classList.remove("hide");}
 function doShake(){ const s=$("#stage"); s.classList.remove("shake"); void s.offsetWidth; s.classList.add("shake"); }
@@ -1788,10 +1850,10 @@ function showExhibit(id){
 /* ==========================================================
    v13 · 출항 항해지도 연출
    ========================================================== */
-const CHART_PTS={busan:[.4553,.784],ulleung:[.6075,.332],dokdo:[.710,.461],oki:[.787,.845]};
+const CHART_PTS={busan:[.4553,.784],ulleung:[.6075,.332],dokdo:[.710,.461],oki:[.787,.845],yangyang:[.4468,.129]};
 function showVoyageChart(i,done){
   const L=LEGS[i],a=CHART_PTS[L.from],b=CHART_PTS[L.to],el=$("#voyage-chart"),W=1531,H=310;
-  const ax=a[0]*W,ay=a[1]*H,bx=b[0]*W,by=b[1]*H,mx=(ax+bx)/2+(by-ay)*.22,my=(ay+by)/2-(bx-ax)*.10;
+  const cs=L.curve||1,ax=a[0]*W,ay=a[1]*H,bx=b[0]*W,by=b[1]*H,mx=(ax+bx)/2+(by-ay)*.22*cs,my=(ay+by)/2-(bx-ax)*.10*cs;
   const d=`M${ax.toFixed(1)} ${ay.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`;
   G.mode="chart";G.inputLock=true;resetInput();ui();$("#prep").classList.add("hide");
   el.innerHTML=`<div class="vc-card"><div class="vc-kicker">航 海 圖 · ${i+1}번째 뱃길</div><h2>${esc(SEAPT[L.from].n)} <span>→</span> ${esc(SEAPT[L.to].n)}</h2>
@@ -1831,11 +1893,12 @@ function catchStageKind(cr){return cr==="methane"?"deep":["gull","petrel","egret
 function startCatch(ent){
   G.lastMode="field";
   const tier=CATCH_TIER[ent.cr]||1,it=DEX[ent.cr],el=$("#catch");
-  CG={ent,tier,t:0,pos:0,dir:1,speed:.85+tier*.38,tries:3,need:tier,prog:0,zw:[28,22,18][tier-1],zc:22+Math.random()*56,
-    amp:[0,13,20][tier-1],zs:.010+Math.random()*.008,phase:Math.random()*6,lock:false,perfects:0};
-  const stars="★".repeat(tier)+"☆".repeat(3-tier),lvl=["쉬움","보통","어려움"][tier-1];
+  /* 난이도는 예전과 같다: 바늘 속도 1.35, 초록 칸 22~32%, 한 번 명중하면 기록. ★은 희귀도(점수)만 뜻한다 */
+  const zw=22+Math.random()*10;
+  CG={ent,tier,t:0,pos:0,dir:1,speed:1.35,tries:3,need:1,prog:0,zw,z0:Math.min(18+Math.random()*54,98-zw),lock:false,perfects:0,trackW:0};
+  const stars="★".repeat(tier)+"☆".repeat(3-tier);
   el.innerHTML=`<div class="ccard catch2 tier${tier}">
-    <div class="c-top"><span class="c-tier">${stars} ${lvl}</span><span class="c-score">조사 점수 <b id="c-score">${DOKDO_SCORE.score.toLocaleString()}</b></span><span class="c-combo ${DOKDO_SCORE.combo>1?"on":""}" id="c-combo">연속 ×${DOKDO_SCORE.combo}</span></div>
+    <div class="c-top"><span class="c-tier">희귀도 ${stars}</span><span class="c-score">조사 점수 <b id="c-score">${DOKDO_SCORE.score.toLocaleString()}</b></span><span class="c-combo ${DOKDO_SCORE.combo>1?"on":""}" id="c-combo">연속 ×${DOKDO_SCORE.combo}</span></div>
     <div class="c-stage ${catchStageKind(ent.cr)}" id="c-stage"><i class="c-ripple"></i><i class="c-ripple r2"></i><i class="c-ripple r3"></i>
       <div class="c-actor" id="c-actor">${creatureHTML(ent.cr,"creature-catch")}</div><div class="c-net" id="c-net"></div><div class="c-fx" id="c-fx"></div><div class="c-pop" id="c-pop"></div></div>
     <h3>${it.n}</h3><p>${CATCHLINE[ent.cr]}</p>
@@ -1851,21 +1914,23 @@ function startCatch(ent){
   $("#cesc").onclick=()=>{ el.classList.add("hide"); CG=null; G.mode="field"; ui(); };
   updateCatchVisual();
 }
-function catchZone(){
-  const c=CG.zc+Math.sin(CG.t*CG.zs+CG.phase)*CG.amp,z0=Math.max(2,Math.min(98-CG.zw,c-CG.zw/2));
-  return [z0,z0+CG.zw,z0+CG.zw*.34,z0+CG.zw*.66];
-}
+function catchZone(){const z0=CG.z0;return [z0,z0+CG.zw,z0+CG.zw*.36,z0+CG.zw*.64];}
 function updateCatch(){
   if(!CG||CG.lock)return;CG.t++;
-  if(CG.tier===3){CG.pos=50+49*Math.sin(CG.t*CG.speed*.021+CG.phase);}
-  else{CG.pos+=CG.dir*CG.speed;if(CG.pos>100){CG.pos=100;CG.dir=-1}if(CG.pos<0){CG.pos=0;CG.dir=1}}
-  updateCatchVisual();
+  CG.pos+=CG.dir*CG.speed;if(CG.pos>100){CG.pos=100;CG.dir=-1}if(CG.pos<0){CG.pos=0;CG.dir=1}
+  moveCatchNeedle();
+}
+function moveCatchNeedle(){
+  const nd=CG&&CG.nd;if(!nd)return;
+  if(!CG.trackW||CG.t%60===0)CG.trackW=CG.tr.clientWidth;
+  nd.style.transform=`translate3d(${(CG.pos/100*(CG.trackW-5)).toFixed(1)}px,0,0)`;
 }
 function updateCatchVisual(){
-  if(!CG)return;const z=catchZone(),cz=$("#cz"),cp=$("#cpf"),nd=$("#nd");
+  if(!CG)return;const z=catchZone(),cz=$("#cz"),cp=$("#cpf");
+  CG.nd=$("#nd");CG.tr=$("#tr");
   if(cz){cz.style.left=z[0]+"%";cz.style.width=(z[1]-z[0])+"%";}
   if(cp){cp.style.left=z[2]+"%";cp.style.width=(z[3]-z[2])+"%";}
-  if(nd)nd.style.left=CG.pos+"%";
+  moveCatchNeedle();
 }
 function replayClass(el,cls){if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
 function catchFX(text,kind,pts){
@@ -1893,7 +1958,7 @@ function catchHit(){
     CG.prog+=perf?2:1;if(perf)CG.perfects++;
     catchFX(perf?"완벽!":"명중!",perf?"perfect":"good",pts);refreshCatchHUD();
     if(CG.prog>=CG.need){
-      const bonus=100*CG.tier+(CG.tries===3?80:0);DOKDO_SCORE.score+=bonus;CG.lock=true;
+      const bonus=50*CG.tier+(CG.tries===3?50:0);DOKDO_SCORE.score+=bonus;CG.lock=true;
       setTimeout(()=>{catchFX(OBSERVE_ONLY.has(CG.ent.cr)?"기록 완료!":"조사 성공!","win",bonus);refreshCatchHUD();const net=$("#c-net");if(net)net.classList.add("drop");const st=$("#c-stage");if(st)st.classList.add("won");},260);
       setTimeout(()=>{
         $("#catch").classList.add("hide");
@@ -1902,8 +1967,6 @@ function catchHit(){
         G.pending=()=>{ G.mode="field"; ui(); checkDokdoDone(); };
         play(sq(nar(caughtNarration(cr,perfAny)),got(cr),dokdoCatchLine(cr)));
       },1250);
-    }else{
-      CG.speed+=.22;CG.zc=14+Math.random()*72;CG.zw=Math.max(12,CG.zw-2);CG.phase+=1.7;
     }
   }else{
     DOKDO_SCORE.combo=0;CG.tries--;catchFX("놓쳤다!","miss",0);refreshCatchHUD();
@@ -1916,7 +1979,7 @@ function catchHit(){
         G.lastMode="field";
         play(say("yi","","놓쳤구먼. 괜찮여, 바다는 도망 안 간다니께.","숨 고르고 다시 해보쇼."));
       },800);
-    }else{ CG.speed+=0.18; }
+    }else{ CG.speed+=0.25; }
   }
 }
 const CATCHLINE={
@@ -2465,21 +2528,40 @@ SC.dongnae_twist=()=>sq(
   say("nh","한숨","바람은 누구 편도 들지 않네. 나도 내 살길을 찾았을 뿐일세."),
   say("nh","미소","{name}, 그 도감도 이리 주게. 저 사람이 죄를 지었다는 증거로 관아에 바치겠네."),
   say("me","도감을 꼭 끌어안으며","싫어요! 이건 죄의 증거가 아니에요.","아저씨가 왜 바다를 건넜는지 보여 주는 기록이에요!"),
-  run(()=>{G.flags.twist=1;quest("관원에게 말을 걸어 도감의 기록으로 안용복을 변호하시오");})
+  say("gw","엄하게","그만! 시비는 이 자리에서 가릴 일이 아니다."),
+  say("gw","","울릉도와 자산도는 강원도에 딸린 섬. 이 일은 강원도 관아에서 가려야 한다.","너희는 배를 몰아 양양으로 가라. 그곳 관아에서 조사를 받게 될 것이다!"),
+  say("gw","","뇌헌, 너는 내 호송선을 타고 먼저 가서 양양 관아에 이 일을 아뢰어라."),
+  say("nh","미소","분부대로 하겠습니다, 나리."),
+  say("yb","담담하게","좋소. 어디서든 할 말은 하겠소."),
+  say("yi","키를 움켜쥐며","양양이면 강원도 북쪽 바다구먼. 배는 내가 몰겄소!"),
+  {k:"banner",t:null},
+  run(()=>{G.flags.twist=1;G.pending=()=>prepareVoyage(4);})
 );
 
+SC.leg_yangyang=()=>sq(
+  nar("강원도 양양. 설악의 산줄기 아래 작은 포구에 배가 닿자, 기다리던 관아의 포졸들이 일행을 에워싼다."),
+  say("yv","","동래에서 기별이 왔소. 모두 배에서 내리시오!"),
+  say("yi","작게","…스님은 벌써 와 있구먼. 관원 곁에 딱 붙어 섰네."),
+  say("nh","미소","먼 길 오느라 수고했네. 이제 이 바다의 일은 나리께서 가려 주실 걸세."),
+  say("yb","담담하게","강원도 땅의 일이니 강원도 관아에서 따지는 게 이치에 맞소."),
+  say("me","도감을 꼭 쥐며","아저씨, 이번엔 제가 기록을 하나씩 보여 드릴게요."),
+  run(()=>{ resetEntities(); enterMap("yangyang",5,8,"r"); quest("양양 관아 관원에게 말을 걸어 도감의 기록으로 안용복을 변호하시오"); })
+);
+SC.chat_yangyang_po=()=>say("yv","창을 세우며","관원 나리께서 기다리고 계시오.","할 말이 있거든 나리 앞에서 하시오.");
+SC.chat_yangyang_fisher=()=>say("ym","수군거리며","저 사람이 일본까지 건너갔다 온 그 사람이래.","울릉도가 우리 땅이라고 일본 관리 앞에서 따졌다지 뭐여.");
+
 SC.trial=()=>sq(
-  say("gw","","이 자는 벼슬도 없는 몸으로 남의 나라에 들어가 조선의 이름을 팔았다.","할 말이 있는가."),
+  say("gy","","이 자는 벼슬도 없는 몸으로 남의 나라에 들어가 조선의 이름을 팔았다.","할 말이 있는가."),
   say("nh","끼어들며","나리, 속지 마십시오. 저 사람은 해물 욕심에 바다를 건넜을 뿐입니다.","섬을 지킨다는 말은 핑계일 뿐입니다."),
   ask([
     {t:"“…저는 상관없는 사람이에요.”",then:sq(
-      say("gw","","…그렇다면 물러서라."),
+      say("gy","","…그렇다면 물러서라."),
       say("yb","조용히","{name}, 그대가 본 것은 그대만이 말할 수 있소.","보이지 않으면, 없는 것이 되오."),
       say("cp","","다시 선택하십시오."),
       {k:"goto",f:()=>play(SC.trial())}
     )},
     {t:"“안용복 아저씨는 잘못한 게 없어요!”",then:sq(
-      say("gw","","말로 하는 변호는 듣지 않는다.","증좌를 대라. 종이로 가져오란 말이다."),
+      say("gy","","말로 하는 변호는 듣지 않는다.","증좌를 대라. 종이로 가져오란 말이다."),
       say("nh","미소","보십시오. 말뿐이지 않습니까."),
       say("cp","","말이 아니라 기록을 내미십시오."),
       {k:"goto",f:()=>play(SC.trial())}
@@ -2492,7 +2574,7 @@ function SC_present(){
     nar("도감을 펼친다. 바다에서 모은 기록이 한 장씩 관원 앞에 펼쳐진다."),
     {k:"exhibit",id:"eco"},
     say("me","","강치와 괭이갈매기, 도화새우와 부채뿔산호까지 독도 바다에서 직접 만난 생물들이에요.","독도는 바위섬 두 개가 아니라, 생명이 가득한 바다예요."),
-    say("gw","","물고기 이야기는 됐다. 그 섬이 누구의 땅이냐를 말하라."),
+    say("gy","","물고기 이야기는 됐다. 그 섬이 누구의 땅이냐를 말하라."),
     {k:"exhibit",id:"sejong"},
     say("me","","1454년에 완성된 《세종실록》 〈지리지〉예요.","울진현 정동쪽 바다에 우산도와 무릉도, 두 섬이 있다고 적혀 있어요."),
     {k:"exhibit",id:"paldo"},
@@ -2509,24 +2591,24 @@ function SC_present(){
     {k:"exhibit",id:"okidoc"},
     say("me","","그리고 이거요. 오키섬 일본 관리가 아저씨 말을 직접 듣고 적은 문서예요.","‘울릉도와 자산도는 조선 강원도에 속한다’는 말이 일본 쪽 기록에도 남은 거예요."),
     {k:"shake"},
-    say("gw","문서를 받아들고","…이 글씨는. 일본 관리의 붓이다."),
+    say("gy","문서를 받아들고","…이 글씨는. 일본 관리의 붓이다."),
     {k:"exhibit",id:"ban"},
     say("me","","일본은 1696년 1월에 자기 나라 사람이 울릉도로 건너가는 걸 막았어요.","아저씨가 건너가기 전의 일이지만, 울릉도를 두고 두 나라가 다툰 끝에 나온 결과예요."),
     {k:"exhibit",id:"recap"},
     say("me","","이 기록들을 모아 보면 보여요.","아저씨는 해물 때문이 아니라, 우리 섬을 지키려고 바다를 건넜어요."),
     {k:"exhibit",id:null},
     nar("관원이 오래 침묵한다. 뇌헌 스님의 얼굴에서 핏기가 가신다."),
-    say("gw","","…이 자가 나라의 허락 없이 바다를 건넌 것은 분명한 죄다."),
-    say("gw","","허나 이 기록들은, 조정이 몇 해를 두고도 받아내지 못한 것이다."),
-    say("gw","침묵","그리고 뇌헌. 함께 바다를 건넜으면서 동료를 팔아 제 죄를 덮으려 했구나.","그대 또한 국경을 넘은 몸이다. 조사를 피할 수는 없다."),
+    say("gy","","…이 자가 나라의 허락 없이 바다를 건넌 것은 분명한 죄다."),
+    say("gy","","허나 이 기록들은, 조정이 몇 해를 두고도 받아내지 못한 것이다."),
+    say("gy","침묵","그리고 뇌헌. 함께 바다를 건넜으면서 동료를 팔아 제 죄를 덮으려 했구나.","그대 또한 국경을 넘은 몸이다. 조사를 피할 수는 없다."),
     say("nh","한숨","…기록이 이렇게 남아 있을 줄은 몰랐네."),
-    say("gw","붓을 든다","죄는 죄대로, 공은 공대로 적겠다.","조정에 올려 판단을 받게 하겠다."),
+    say("gy","붓을 든다","죄는 죄대로, 공은 공대로 적겠다.","조정에 올려 판단을 받게 하겠다."),
     say("yb","돌아본다","{name}… 어느 틈에 이런 것을 다 적어 두었소."),
     say("me","","아저씨가 그랬잖아요. 본 사람이 많아야 한다고.","그래서 하나도 안 빼고 다 적어 뒀어요."),
     say("yb","오래 웃는다","허허… 허허."),
     say("yb","","그렇구려. 그게 바로 지키는 것이오."),
     say("yi","","기억은 흩어져도 기록은 남는구먼.","오늘 {name}이 그걸 똑똑히 보여 줬소."),
-    rec("실제 역사에서 안용복은 귀국 후 국경을 넘고 관리를 사칭한 죄로 조사와 처벌을 받았다. 실제 기록 속 뇌헌은 안용복과 함께 일본에 건너갔다가 함께 조사를 받은 동행자이며, 관원에게 몰래 알렸다는 이야기는 게임을 위한 상상이다. 에도 막부의 일본인 울릉도 도해금지 조치는 1696년 1월에 내려졌다."),
+    rec("실제 역사에서 안용복 일행은 일본에서 돌아와 강원도 양양에 닿았고, 안용복은 국경을 넘고 관리를 사칭한 죄로 조사와 처벌을 받았다. 실제 기록 속 뇌헌은 안용복과 함께 일본에 건너갔다가 함께 조사를 받은 동행자이며, 관원에게 몰래 알렸다는 이야기는 게임을 위한 상상이다. 에도 막부의 일본인 울릉도 도해금지 조치는 1696년 1월에 내려졌다."),
     say("cp","","기록이 남았으므로, 여정이 완성되었습니다."),
     got("badge"),
     say("yb","시간문 앞에서","{name}, 그대가 사는 시대에도 이 바다와 두 섬을 기억해 주시오."),
@@ -2641,7 +2723,7 @@ function showEnding(){
     <h2>독도 시간탐험대 임무 완료</h2>
     <p class="q">시간문을 넘어 부산 수영사적공원으로 무사히 돌아왔습니다.<br>그가 남긴 것은 섬이 아니라, 기록이었습니다.</p>
     <canvas id="route" width="720" height="470"></canvas>
-    <p class="q" style="font-size:15px;margin-top:12px">〈안용복 항로도〉 1696년<br>부산포 → 울릉도 → 자산도 → 오키섬 → 부산포·동래성 → 수영사적공원 · 모두 ${G.day}일</p>
+    <p class="q" style="font-size:15px;margin-top:12px">〈안용복 항로도〉 1696년<br>부산포 → 울릉도 → 자산도 → 오키섬 → 부산포·동래성 → 양양 → 수영사적공원 · 모두 ${G.day}일</p>
     ${crewPassHTML("ending-pass")}
     <p class="q" style="font-size:15px">모은 기록 ${found.length} / ${Object.keys(DEX).filter(k=>k!=="badge").length}<br>
       ${found.map(f=>f.em+" "+f.n).join(" · ")}</p>
@@ -2653,7 +2735,7 @@ function showEnding(){
       · 《숙종실록》에는 1696년 안용복이 뇌헌에게 울릉도의 풍부한 해물을 말해 동행을 권했고, 울릉도에서 일본인을 만나자 침범을 강하게 항의했다고 기록되어 있습니다. 그가 출항 전부터 일본 관청에 항의할 뜻을 굳혔다는 대사는 지도 휴대와 이후의 행동을 바탕으로 한 <b style="display:inline">게임의 역사적 해석</b>입니다.<br>
       · 에도 막부의 일본인 울릉도 도해금지 조치는 1696년 1월에 내려졌고, 안용복의 두 번째 도일은 그 뒤에 이루어졌습니다. 도해금지 조치는 울릉도에 관한 것이므로 독도를 직접 지칭한 문서로 과장하지 않습니다.<br>
       · 실제 안용복은 귀국 뒤 국경을 넘고 관리를 사칭한 죄로 처벌을 받았습니다. 이 게임의 마지막 변호와 현대로 돌아오는 장면은 학습을 위해 구성한 <b style="display:inline">가정</b>입니다.<br>
-      · 귀항 뒤 뇌헌 스님이 관원에게 몰래 알리는 반전과 그를 악역으로 그린 장면은 <b style="display:inline">게임을 위한 상상</b>입니다. 실제 뇌헌은 안용복과 함께 일본에 건너갔다가 함께 조사를 받은 동행자입니다. 마지막 장면의 무대인 동래성도 게임의 설정이며, 실제 일행은 강원도 양양으로 돌아와 붙잡혔습니다.<br>
+      · 귀항 뒤 뇌헌 스님이 관원에게 몰래 알리는 반전과 그를 악역으로 그린 장면은 <b style="display:inline">게임을 위한 상상</b>입니다. 실제 뇌헌은 안용복과 함께 일본에 건너갔다가 함께 조사를 받은 동행자입니다. 실제 일행은 일본에서 곧바로 강원도 양양에 닿아 붙잡혔고 조정의 조사를 받았습니다. 게임에서는 부산포에 먼저 들렀다가 뇌헌의 밀고로 양양 관아로 보내지는 순서로 구성했습니다.<br>
       · 장한상 수토 기록을 안용복 일행이 자료 카드로 지니고 일본 관리와 논박하는 구성, 유일부·뇌헌의 성격과 대사, 시간문과 시간 나침반, 생태 조사 장면은 학습을 위한 창작입니다.</div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
       <button class="btn" id="e-dex">도감·대원증 보기</button>
@@ -2677,7 +2759,7 @@ function drawRoute(){
   OKIISL.forEach(o=>{x.beginPath();x.arc(o[0]*w,o[1]*h,o[2]*w,0,7);x.fillStyle="#a9c98a";x.fill();x.strokeStyle="#6d8a56";x.stroke();});
   x.beginPath();x.arc(SEAPT.ulleung.x*w,SEAPT.ulleung.y*h,11,0,7);x.fillStyle="#9dc47e";x.fill();x.stroke();
   x.beginPath();x.arc(SEAPT.dokdo.x*w,SEAPT.dokdo.y*h,6,0,7);x.fillStyle="#a8a184";x.fill();x.stroke();
-  const legs=[["busan","ulleung"],["ulleung","dokdo"],["dokdo","oki"],["oki","busan"]];
+  const legs=[["busan","ulleung"],["ulleung","dokdo"],["dokdo","oki"],["oki","busan"],["busan","yangyang"]];
   x.setLineDash([9,7]); x.strokeStyle="#b23425"; x.lineWidth=3;
   legs.forEach(l=>{const a=SEAPT[l[0]],b=SEAPT[l[1]];
     x.beginPath();x.moveTo(a.x*w,a.y*h);x.lineTo(b.x*w,b.y*h);x.stroke();});
@@ -2711,18 +2793,23 @@ function ui(){
 }
 /* v15 · 게임 속도는 초당 60번으로 고정하고, 화면은 그릴 수 있을 때마다 그린다.
    60Hz 화면에서 프레임을 건너뛰던 문제와 120Hz 화면에서 빨라지던 문제를 함께 막는다. */
-let lastFrame=0,frameAcc=0;const STEP_MS=1000/60;
+let lastFrame=0,frameAcc=0,FRAME_DT=1000/60;const STEP_MS=1000/60;
+/* 걷기는 화면 한 장마다 흐른 시간만큼 움직여, 60·90·120Hz 어느 화면에서도 매끄럽게 보이게 한다 */
+function fieldMove(dt){
+  if(G.mode!=="field")return;
+  if(!P.moving){tryMove();if(!P.moving){P.walk=0;return;}}
+  let dist=(P.map==="dokdo"?4.4:3.2)*Math.min(3,dt/STEP_MS),guard=0;
+  while(dist>0&&P.moving&&guard++<4){
+    const rem=Math.abs(P.tx*T-P.px)+Math.abs(P.ty*T-P.py),d=Math.min(dist,rem);
+    P.px+=P.fx*d;P.py+=P.fy*d;P.walk=(P.walk||0)+d;dist-=d;
+    if(d>=rem-1e-6){P.px=P.tx*T;P.py=P.ty*T;P.moving=false;tryMove();}
+  }
+}
 /* 항해 화면 해상도: 기본 1.25배. 기기가 버거워하면(평균 20ms 넘게 걸리면) 자동으로 1배로 낮춘다. */
 let SEA_DPR=1.25;const SEA_PERF={n:0,sum:0};
 function updateFrame(){
   TICK++;
   if(G.mode==="field"){
-    tryMove();
-    if(P.moving){
-      const sp=P.map==="dokdo"?4.4:3.2;
-      P.px+=P.fx*sp; P.py+=P.fy*sp; P.anim++;
-      if(Math.abs(P.px-P.tx*T)<sp&&Math.abs(P.py-P.ty*T)<sp){ P.px=P.tx*T;P.py=P.ty*T;P.moving=false;tryMove(); }
-    }else P.anim=0;
     if(TICK%42===0) (ENT[P.map]||[]).forEach(e=>{
       if(!e.wander||e.gone) return;
       const d=[[0,1],[0,-1],[1,0],[-1,0]][Math.random()*4|0];
@@ -2737,7 +2824,7 @@ function updateFrame(){
 function renderFrame(){
   const seaView=G.mode==="sea"||(G.mode==="talk"&&(G.talkReturnMode==="sea"||G.talkReturnMode==="port"));
   setDprCap(seaView?SEA_DPR:2);
-  if(G.mode==="field"||(G.mode==="catch"&&CG)) drawField();
+  if(G.mode==="field") drawField();
   else if(G.mode==="talk"){ if(G.talkReturnMode==="sea"||G.talkReturnMode==="port") drawSea(); else drawField(); }
   else if(G.mode==="sea") drawSea();
 }
@@ -2748,10 +2835,13 @@ function loop(now){
   if(!lastFrame)lastFrame=now;
   const dt=now-lastFrame;frameAcc+=Math.min(120,dt);lastFrame=now;
   if(G.mode==="sea"&&SEA_DPR>1&&dt<250){SEA_PERF.n++;SEA_PERF.sum+=dt;if(SEA_PERF.n>=120){if(SEA_PERF.sum/SEA_PERF.n>20)SEA_DPR=1;SEA_PERF.n=0;SEA_PERF.sum=0;}}
+  FRAME_DT=Math.max(0,Math.min(50,dt));
   let n=Math.min(4,Math.floor(frameAcc/STEP_MS+.35));
   frameAcc=Math.max(-STEP_MS,frameAcc-n*STEP_MS);
+  fieldMove(FRAME_DT);
   for(let i=0;i<n;i++)updateFrame();
-  if(n>0)renderFrame();
+  const fieldView=G.mode==="field"||(G.mode==="talk"&&G.talkReturnMode!=="sea"&&G.talkReturnMode!=="port");
+  if(n>0||fieldView)renderFrame();
 }
 
 /* ---------- 시작 ---------- */

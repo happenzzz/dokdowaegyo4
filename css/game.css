@@ -535,10 +535,11 @@ h1{font-family:var(--display);font-weight:400;margin:0;font-size:clamp(34px,7vw,
 .c-stage.deep{background:radial-gradient(circle at 50% 72%,#1e5f86,#061a2b 82%)}
 .c-stage.sky{background:linear-gradient(#9fd6ef,#d8f0f7 62%,#5d8f63 63%,#3f6b44)}
 .c-stage.rock{background:linear-gradient(#2c8fb3 0 56%,#7d7a70 56%,#5d5a52)}
-.c-ripple{position:absolute;left:50%;top:64%;border:2px solid rgba(230,250,255,.6);border-radius:50%;transform:translate(-50%,-50%);animation:cRip 2.4s linear infinite}
+.c-ripple{position:absolute;left:50%;top:64%;width:340px;height:84px;margin:-42px 0 0 -170px;border:2px solid rgba(230,250,255,.6);border-radius:50%;
+  transform:scale(.12);opacity:0;animation:cRip 2.4s linear infinite;will-change:transform,opacity}
 .c-ripple.r2{animation-delay:.8s}.c-ripple.r3{animation-delay:1.6s}
 .c-stage.sky .c-ripple{display:none}
-@keyframes cRip{from{width:40px;height:12px;opacity:.9}to{width:340px;height:84px;opacity:0}}
+@keyframes cRip{from{transform:scale(.12);opacity:.9}to{transform:scale(1);opacity:0}}
 .c-actor{position:relative;z-index:2}
 .c-actor .creature-catch{width:clamp(104px,17vh,146px);height:clamp(104px,17vh,146px);margin:0}
 .c-actor.hit{animation:cHit .42s cubic-bezier(.2,1.6,.4,1)}
@@ -592,3 +593,8 @@ h1{font-family:var(--display);font-weight:400;margin:0;font-size:clamp(34px,7vw,
 .dz-line{font:clamp(16px,2.3vw,23px)/1.55 var(--serif);min-height:2.4em;white-space:pre-wrap}
 .dz-next{align-self:end;white-space:nowrap}
 @media (max-width:620px){.dz-talk{grid-template-columns:auto 1fr}.dz-next{grid-column:1/-1;justify-self:end}}
+
+/* v16 · 생물 조사 화면 가볍게: 바늘은 transform으로만 움직이고, 겹친 층은 따로 합성한다 */
+.catch2 .needle{left:0!important;will-change:transform}
+#catch{contain:layout paint}
+.c-stage{contain:paint;isolation:isolate}
