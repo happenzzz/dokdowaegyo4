@@ -1,0 +1,29 @@
+독도 시간탐험대 · Cloudflare 배포용 분할본
+================================================
+
+이 폴더의 index.html, css, js, assets 폴더를 모두 함께 올려야 합니다.
+파일 이름이나 폴더 구조를 바꾸지 마세요.
+
+[Cloudflare Pages 대시보드에서 올리기]
+1. Workers & Pages → Create application → Pages → Drag and drop을 선택합니다.
+2. 이 폴더 전체 또는 제공된 ZIP 파일을 올립니다.
+3. Save and Deploy를 누릅니다.
+
+[Antigravity 터미널에서 올리기]
+이 폴더로 이동한 뒤 아래 명령을 실행합니다.
+
+  npx wrangler pages deploy .
+
+기존 Pages 프로젝트를 선택하면 새 버전으로 배포됩니다.
+
+[구조]
+index.html             시작 문서
+css/game.css           게임 화면 디자인
+css/google-fonts.css   한글 제목 글꼴 설정
+css/pretendard.css     UI 글꼴 설정
+js/game.js             게임 전체 기능과 이야기
+assets/                배경·인물·선박·생물·사료 스프라이트 30개
+                       (v13 추가: player-walk.png 주인공 걷기 20프레임,
+                        bg-*.webp 수영사적공원·부산포·오키섬 성 밖/성 안·동래성·출항 부두·항해지도)
+
+원본 게임의 이미지 픽셀과 JavaScript 내용은 다시 압축하거나 축소하지 않고 그대로 분리했습니다.

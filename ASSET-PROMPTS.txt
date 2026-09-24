@@ -1,0 +1,25 @@
+Image generation route: built-in image_gen (no CLI/API fallback).
+Final production prompt specifications:
+
+1. bg-suyeong / bg-oki-gate / bg-oki-hall / bg-dongnae
+Remaster the supplied original educational RPG background as sharp clean high-definition illustrated 2D game art. Preserve original aspect ratio, camera, paths, building footprints and all embedded NPC positions and sizes. Keep identities, colors and historical/modern setting. Reconstruct clear faces, clothing, architecture and foliage. No blurry pixel texture, no border, no UI, no added people.
+
+2. bg-busan / bg-departure (same final image)
+Humble rural Joseon Korean fishing harbor around 1696, high bird's-eye oblique view. Low single-story chogajip with thick straw roofs and clay walls at the top-left edge. Large clear dirt square across left and foreground. Sea at right, simple weathered wooden pier and one plain wooden fishing sailboat. Onggi, baskets, nets and vegetable patch only near periphery. No people baked into the image. No Japanese castles, pagodas, insignia, grand tile-roof palaces or developed trading city. Warm inviting countryside, sharp illustrated game art, no UI or text.
+
+3. player-walk
+Identity-preserving remaster of original protagonist: navy jacket, light shirt, tan trousers, brown cross-body bag, black hair. Transparent background. Exact 5 columns x 4 rows: front, back, left, right; idle plus four walking frames. Fully contained heads/feet, clean outlines and shading, no grid or backdrop.
+
+4. characters-main / characters-support
+Identity-preserving remaster of supplied six-character full-body atlas. Exact 3 columns x 2 rows. Preserve all identities, clothes, accessories, poses and cell placements. Crisp illustrated faces and hands, smooth shading instead of noisy pixels. Transparent background, no labels or grid.
+
+5. sea-terrain
+Top-down aerial painterly Korean mountain forest texture. Dense detailed green canopies, mossy grey rocks and rolling ridges, light from upper left. Continuous terrain to all edges, suitable for repeating. No water, sky, coast, labels, paths, people or buildings.
+
+6. sea-islands
+Transparent illustrated sailing-game landform atlas, three columns and two rows. Ulleungdo-inspired lush steep island; Dokdo Seodo-inspired rugged tall rock; smaller Dongdo-inspired rock; forested Oki island; reef cluster; small rugged green islet. Bird's-eye oblique view, crisp ridges, trees and cliff strata. No sea rectangle, sky, text or grid. These are game illustrations rather than surveyed cartography.
+
+Notes
+Output sizes are recorded in assets/manifest.json. Assets retain their generated native resolution;
+no artificial claim of 4K reconstruction is made. WebP encoding is used for backgrounds/sea art;
+PNG alpha is retained for the protagonist and primary character atlases.
