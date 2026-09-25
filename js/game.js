@@ -1,6 +1,6 @@
 "use strict";
 /* ==========================================================
-   독도 시간탐험대 v16 · 걷기·생물 조사 최적화 · 양양 포구 · 생물 조사 난이도 복구
+   독도 시간탐험대 v18 · 시간탐험대 여권(표지·여정 지도·도장·기재사항·메모)
    ========================================================== */
 const $=s=>document.querySelector(s);
 const cv=$("#game"), g=cv.getContext("2d",{alpha:false});
@@ -84,7 +84,7 @@ addEventListener("DOMContentLoaded",()=>{
 });
 
 /* ---------- 상태 ---------- */
-const G={ name:"탐험대원", mode:"title", scene:"", dex:[], flags:{}, caught:[], evidence:[], day:0,
+const G={ name:"탐험대원", mode:"title", scene:"", dex:[], flags:{}, caught:[], evidence:[], day:0, stampLog:{}, passportMemo:"",
   talkReturnMode:"field", pending:null, inputLock:false, overlayReturnMode:null, portNotice:"" };
 
 /* ---------- 날짜 · 시각 · 밤낮 ---------- */
@@ -287,7 +287,7 @@ const DEX={
   trace:{c:"기록",em:"🪵",n:"일본 어선의 벌목·어업 흔적",kind:"현장 정황 자료",d:"벌목한 나무와 낯선 매듭의 그물은 일본 어선이 단순히 지나간 것이 아니라 머물며 어업했음을 보여 주는 정황이다. 이것만으로 섬의 소속이 결정되지는 않는다."},
   okidoc:{c:"기록",em:"📜",n:"일본 관리의 《조선지팔도》 조사 문서",kind:"일본 측 진술 조사 기록",d:"오키섬 관리가 안용복의 진술을 조사하며 울릉도와 자산도가 조선 강원도에 속한다는 그의 설명을 일본 측 기록으로 남긴 문서. 안용복의 주장을 확인해 주지만 일본 정부의 영유권 승인서와 같은 문서는 아니다."},
   ban:{c:"기록",em:"🚫",n:"일본인의 울릉도 도해금지 조치(1696)",kind:"에도 막부의 울릉도 조치",d:"에도 막부가 일본인의 울릉도 도항을 금지한 조치. 울릉도 쟁계의 중요한 결과이지만 독도 자체를 직접 지칭한 문서로 과장해서는 안 된다."},
-  badge:{c:"기록",em:"🎖️",n:"독도 시간탐험대 대원증",d:"1696년의 항해를 끝까지 함께한 사람에게 주어지며, 수집한 도감과 함께 PDF로 발급할 수 있다."}
+  badge:{c:"기록",em:"🛂",n:"시간탐험대 여권",d:"1696년의 항해를 끝까지 함께한 사람에게 발급된다. 만난 인물과 조사한 생물·자원이 도장으로 찍혀 있고, 모은 포인트가 적혀 있으며, PDF로 저장할 수 있다."}
 };
 const CATS=["인물","독도의 생물과 자원","동해안의 전설","기록"];
 
@@ -395,27 +395,29 @@ okicastle:{name:"오키섬 성 안 · 관청 접견실",sub:"隱 岐 · 성 안"
   "#######....#....#....#######",
   "############################"],
   spawn:[14,12]},
-yangyang:{name:"양양 포구 · 강원도",sub:"襄 陽 · 강 원 도",bg:true,fig:1,npcFig:1,
+yangyang:{name:"양양도호부 관아",sub:"襄 陽 都 護 府 · 강 원 도",bg:true,fig:.98,npcFig:1.05,
   rows:[
-  "################################",
-  "################################",
-  "################################",
-  "################################",
-  "################################",
-  "##############..............####",
-  "#############................###",
-  "#############.................##",
-  "###...........................##",
-  "###...........................##",
-  "#############.................##",
-  "#############.................##",
-  "#############.................##",
-  "#############.................##",
-  "#############.................##",
-  "#############................###",
-  "################################",
-  "################################"],
-  spawn:[5,8]},
+  "####################################",
+  "####################################",
+  "####################################",
+  "####################################",
+  "####################################",
+  "####################################",
+  "####################################",
+  "################.....###############",
+  "###########..............###########",
+  "#########......................#####",
+  "#########......................#####",
+  "###########....................#####",
+  "#############............##.....####",
+  "################....################",
+  "################....################",
+  "################....################",
+  "###############......###############",
+  "###############......###############",
+  "###########............##..#########",
+  "#########..................#########"],
+  spawn:[18,18]},
 busan2:{name:"동래성 · 귀항",sub:"東 萊 城 · 조 정 의 조 사",bg:true,fig:1.02,npcFig:1.1,
   rows:[
   "############################",
@@ -510,13 +512,20 @@ function resetEntities(){
     {id:"yi",ch:"yi",tx:10,ty:10,dir:"u",talk:"chat_yi_oki"}
   ],
   yangyang:[
-    {id:"gy",ch:"gy",tx:20,ty:8,dir:"l",talk:"trial"},
-    {id:"nh",ch:"nh",tx:21,ty:7,dir:"l",talk:"chat_nh_trial"},
-    {id:"yv1",ch:"yv",tx:19,ty:6,dir:"l",talk:"chat_yangyang_po"},
-    {id:"yv2",ch:"yv",tx:21,ty:10,dir:"l",talk:"chat_yangyang_po"},
-    {id:"ym",ch:"ym",tx:26,ty:12,dir:"l",talk:"chat_yangyang_fisher",wander:1},
-    {id:"yb",ch:"yb",tx:6,ty:9,dir:"r",talk:"chat_yb_trial"},
-    {id:"yi",ch:"yi",tx:4,ty:9,dir:"r",talk:"chat_yi_trial"}
+    {id:"gy",ch:"gy",tx:17,ty:6,w:3,h:1,talk:"trial",baked:1},
+    {id:"nh",ch:"nh",tx:20,ty:8,dir:"l",talk:"chat_nh_trial"},
+    {id:"g1",tx:14,ty:8,talk:"chat_yangyang_po",baked:1},
+    {id:"g2",tx:22,ty:8,talk:"chat_yangyang_po",baked:1},
+    {id:"gg1",tx:14,ty:18,talk:"chat_yangyang_po",baked:1},
+    {id:"gg2",tx:21,ty:18,talk:"chat_yangyang_po",baked:1},
+    {id:"o1",tx:22,ty:11,talk:"chat_yangyang_clerks",baked:1},
+    {id:"o2",tx:23,ty:11,talk:"chat_yangyang_clerks",baked:1},
+    {id:"l1",tx:10,ty:10,talk:"chat_yangyang_fisher",baked:1},
+    {id:"l2",tx:12,ty:10,talk:"chat_yangyang_porter",baked:1},
+    {id:"l3",tx:13,ty:12,talk:"chat_yangyang_fisher2",baked:1},
+    {id:"l4",tx:30,ty:11,talk:"chat_yangyang_horse",baked:1},
+    {id:"yb",ch:"yb",tx:17,ty:19,dir:"u",talk:"chat_yb_trial"},
+    {id:"yi",ch:"yi",tx:19,ty:19,dir:"u",talk:"chat_yi_trial"}
   ],
   busan2:[
     {id:"gw",ch:"gw",tx:12,ty:13,talk:"trial",baked:1},
@@ -1791,7 +1800,8 @@ function dismissStamp(){
 }
 function award(id){
   if(G.dex.indexOf(id)<0) G.dex.push(id);
-  const it=DEX[id], w=$("#stamp"),visual=creatureSpriteSpec(id)?creatureHTML(id,"creature-stamp"):EVIDENCE_SPRITES[id]?evidenceHTML(id,"evidence-stamp"):DEX_ATLAS[id]?atlasHTML(DEX_ATLAS[id],"atlas-stamp",it.n):`<div class="em">${it.em}</div>`;
+  if(!G.stampLog[id]) G.stampLog[id]={y:CLOCK.year,m:CLOCK.month,d:CLOCK.day};
+  const it=DEX[id], w=$("#stamp"),visual=id==="badge"&&typeof passportMiniHTML==="function"?passportMiniHTML("",true):creatureSpriteSpec(id)?creatureHTML(id,"creature-stamp"):EVIDENCE_SPRITES[id]?evidenceHTML(id,"evidence-stamp"):DEX_ATLAS[id]?atlasHTML(DEX_ATLAS[id],"atlas-stamp",it.n):`<div class="em">${it.em}</div>`;
   w.innerHTML=`<div class="scard"><div class="k">도 감 기 록</div>${visual}
     <div class="n">${it.n}</div><div class="d">${it.d}</div><div class="seal">記<br>錄</div></div>`;
   hydrateAtlasSprites(w);
@@ -2545,9 +2555,14 @@ SC.leg_yangyang=()=>sq(
   say("nh","미소","먼 길 오느라 수고했네. 이제 이 바다의 일은 나리께서 가려 주실 걸세."),
   say("yb","담담하게","강원도 땅의 일이니 강원도 관아에서 따지는 게 이치에 맞소."),
   say("me","도감을 꼭 쥐며","아저씨, 이번엔 제가 기록을 하나씩 보여 드릴게요."),
-  run(()=>{ resetEntities(); enterMap("yangyang",5,8,"r"); quest("양양 관아 관원에게 말을 걸어 도감의 기록으로 안용복을 변호하시오"); })
+  nar("포졸들을 따라 양양도호부 관아의 솟을대문을 들어선다. 대청 위에서 관원이 붓을 들고 일행을 기다리고 있다."),
+  run(()=>{ preloadJourneyMap(); resetEntities(); enterMap("yangyang",18,18,"u"); quest("대청 위 관원에게 말을 걸어 도감의 기록으로 안용복을 변호하시오"); })
 );
 SC.chat_yangyang_po=()=>say("yv","창을 세우며","관원 나리께서 기다리고 계시오.","할 말이 있거든 나리 앞에서 하시오.");
+SC.chat_yangyang_clerks=()=>nar("푸른 도포의 향리와 붉은 옷의 군관이 동래에서 온 기별을 두고 소곤거린다. “일본까지 건너갔다 왔다니, 보통 일이 아니오.”");
+SC.chat_yangyang_porter=()=>nar("짐을 멘 사내가 대청 쪽을 흘끗 본다. “부사 나리 앞에서는 말을 또박또박 해야 하오.”");
+SC.chat_yangyang_fisher2=()=>nar("삿갓 쓴 어부가 짐을 고쳐 멘다. “울릉도 바다에 일본 배가 바글바글했다던데, 그게 참말이오?”");
+SC.chat_yangyang_horse=()=>nar("말고삐를 쥔 사내가 말의 목을 쓰다듬는다. “한양으로 올릴 장계를 싣고 갈 말이라오.”");
 SC.chat_yangyang_fisher=()=>say("ym","수군거리며","저 사람이 일본까지 건너갔다 온 그 사람이래.","울릉도가 우리 땅이라고 일본 관리 앞에서 따졌다지 뭐여.");
 
 SC.trial=()=>sq(
@@ -2651,30 +2666,12 @@ SC.return_reunion=()=>sq(
 /* ==========================================================
    도감 · 엔딩
    ========================================================== */
-function crewIdCode(){
-  let hash=1696;for(const ch of (G.name||"탐험대원"))hash=(Math.imul(hash,31)+ch.charCodeAt(0))>>>0;
-  return `DT-1696-${String(hash%100000).padStart(5,"0")}`;
+/* v18 · 대원증·도감 PDF 대신 시간탐험대 여권(js/passport.js)을 발급한다 */
+function passportPanelHTML(issued){
+  return issued
+    ? `<div class="dex-passport">${passportMiniHTML("dx-passport-mini")}<div><b>시간탐험대 여권</b><span>여권을 눌러 펼치면 만난 인물과 조사한 생물·자원 도장, 모은 포인트를 볼 수 있고 PDF로 저장할 수 있습니다.</span></div></div>`
+    : `<div class="crew-id-pending"><b>시간탐험대 여권</b><span>임무를 완료하면 도장이 찍힌 시간탐험대 여권이 발급됩니다.</span></div>`;
 }
-function crewPassHTML(extraClass=""){
-  const recordKeys=Object.keys(DEX).filter(k=>k!=="badge"),found=recordKeys.filter(k=>G.dex.includes(k)).length;
-  return `<div class="crew-pass ${extraClass}">
-    <div class="crew-pass-head"><div class="crew-pass-mark">獨島</div><div class="crew-pass-title"><small>1 6 9 6 · 東 海</small><b>독도 시간탐험대 대원증</b></div></div>
-    <div class="crew-pass-body"><div class="crew-pass-name"><small>대 원 이 름</small><strong>${esc(G.name||"탐험대원")}</strong><div class="crew-pass-role">안용복의 항해에 함께해 독도의 생태와 역사 기록을 완성한 대원</div></div><div class="crew-pass-seal">임무<br>완료</div></div>
-    <div class="crew-pass-meta"><span><small>발급 번호</small><b>${crewIdCode()}</b></span><span><small>도감 기록</small><b>${found} / ${recordKeys.length}</b></span><span><small>발급일</small><b>2026. 08. 02.</b></span></div>
-  </div>`;
-}
-function buildPrintPack(){
-  const recordKeys=Object.keys(DEX).filter(k=>k!=="badge"&&G.dex.includes(k));let sections="";
-  CATS.forEach(cat=>{const keys=recordKeys.filter(k=>DEX[k].c===cat);if(!keys.length)return;
-    sections+=`<section class="print-cat"><h2>${esc(cat)}</h2><div class="print-grid">${keys.map(k=>{const v=DEX[k];return `<article class="print-entry"><h3>${esc(v.n)}</h3><p>${esc(v.d)}</p></article>`;}).join("")}</div></section>`;
-  });
-  $("#print-pack").innerHTML=`<section class="print-cover"><div class="print-kicker">독 도 시 간 탐 험 대</div><h1>대원증 · 시간탐험 도감</h1><p class="print-lead">1696년의 항해에서 모은 생태와 역사 기록을 함께 발급합니다.</p><div class="print-card-cut">${crewPassHTML("print-pass")}</div><p class="print-summary">발급 대원 ${esc(G.name||"탐험대원")} · 수록 도감 ${recordKeys.length} / ${Object.keys(DEX).filter(k=>k!=="badge").length}<br>점선을 따라 자르면 실제 대원증 크기로 보관할 수 있습니다.</p></section><main class="print-dex"><header><small>DOKDO TIME EXPEDITION</small><h1>시간탐험 도감</h1><p>${esc(G.name||"탐험대원")} 대원이 직접 확인하고 수집한 기록</p></header>${sections}</main>`;
-}
-function printExplorerPack(){
-  if(!G.dex.includes("badge")){flash("임무를 완료하면 대원증을 발급할 수 있습니다.");return;}
-  buildPrintPack();const pack=$("#print-pack");pack.setAttribute("aria-hidden","false");window.print();
-}
-addEventListener("afterprint",()=>{const pack=$("#print-pack");if(pack)pack.setAttribute("aria-hidden","true");});
 const DEX_RETURN_MODES=new Set(["title","field","sea","talk","port","prep","ending"]);
 let dexOpener=null;
 function openDex(){
@@ -2684,8 +2681,8 @@ function openDex(){
   G.overlayReturnMode=G.mode; G.mode="overlay"; resetInput(); ui();
   const issued=G.dex.includes("badge"),recordKeys=Object.keys(DEX).filter(k=>k!=="badge"),collected=recordKeys.filter(k=>G.dex.includes(k)).length;
   let h=`<div class="dexh"><h2 id="dex-title">시간탐험 도감</h2><span style="font-family:var(--serif);color:var(--paper-2);font-size:14px">기록 ${collected} / ${recordKeys.length}</span>
-    <div class="dex-actions"><button class="ibtn" id="dx-print" ${issued?"":"disabled"}>${issued?"대원증·도감 PDF 저장":"임무 완료 후 PDF 발급"}</button><button class="ibtn" id="dxc" aria-label="시간탐험 도감 닫기">닫기</button></div></div>
-    <div class="dex-scroll"><div class="dex-pass-wrap">${issued?crewPassHTML("dex-pass"):`<div class="crew-id-pending"><b>독도 시간탐험대 대원증</b><span>임무를 완료하면 수집한 도감과 함께 PDF로 발급할 수 있습니다.</span></div>`}</div><div class="dexg">`;
+    <div class="dex-actions"><button class="ibtn" id="dx-print" ${issued?"":"disabled"}>${issued?"시간탐험대 여권":"임무 완료 후 여권 발급"}</button><button class="ibtn" id="dxc" aria-label="시간탐험 도감 닫기">닫기</button></div></div>
+    <div class="dex-scroll"><div class="dex-pass-wrap">${passportPanelHTML(issued)}</div><div class="dexg">`;
   CATS.forEach(cat=>{
     h+=`<div class="dexcat">${cat}</div>`;
     Object.entries(DEX).filter(([k,v])=>k!=="badge"&&v.c===cat).forEach(([k,v])=>{
@@ -2700,7 +2697,7 @@ function openDex(){
   if(scroller)scroller.scrollTop=0;
   closeButton.onclick=closeDex;
   requestAnimationFrame(()=>{if(scroller)scroller.scrollTop=0;try{closeButton.focus({preventScroll:true});}catch(_){closeButton.focus();}});
-  if(issued)$("#dx-print").onclick=printExplorerPack;
+  if(issued){$("#dx-print").onclick=openPassport;$("#dx-passport-mini").onclick=openPassport;}
 }
 function closeDex(){
   const el=$("#dex");
@@ -2722,9 +2719,9 @@ function showEnding(){
   $("#ending").innerHTML=`<div class="ew">
     <h2>독도 시간탐험대 임무 완료</h2>
     <p class="q">시간문을 넘어 부산 수영사적공원으로 무사히 돌아왔습니다.<br>그가 남긴 것은 섬이 아니라, 기록이었습니다.</p>
-    <canvas id="route" width="720" height="470"></canvas>
+    <figure class="journey"><img id="route-map" src="assets/journey-map.webp" width="2171" height="724" decoding="async" alt="안용복의 독도 수호 여정 지도(1696년)"><figcaption>지도를 누르면 크게 볼 수 있습니다</figcaption></figure>
     <p class="q" style="font-size:15px;margin-top:12px">〈안용복 항로도〉 1696년<br>부산포 → 울릉도 → 자산도 → 오키섬 → 부산포·동래성 → 양양 → 수영사적공원 · 모두 ${G.day}일</p>
-    ${crewPassHTML("ending-pass")}
+    <div class="pp-issued">${passportMiniHTML("e-passport-mini")}<div><b>시간탐험대 여권이 발급되었습니다</b><span>여권을 눌러 펼쳐 보세요. 만난 인물과 조사한 생물·자원이 도장으로 찍혀 있고, 모은 포인트가 적혀 있습니다. 맨 뒷장 메모란에 기억하고 싶은 것을 적은 뒤 PDF로 저장할 수 있습니다.</span></div></div>
     <p class="q" style="font-size:15px">모은 기록 ${found.length} / ${Object.keys(DEX).filter(k=>k!=="badge").length}<br>
       ${found.map(f=>f.em+" "+f.n).join(" · ")}</p>
     <div class="fact"><b>사 실 과 상 상</b>
@@ -2738,15 +2735,23 @@ function showEnding(){
       · 귀항 뒤 뇌헌 스님이 관원에게 몰래 알리는 반전과 그를 악역으로 그린 장면은 <b style="display:inline">게임을 위한 상상</b>입니다. 실제 뇌헌은 안용복과 함께 일본에 건너갔다가 함께 조사를 받은 동행자입니다. 실제 일행은 일본에서 곧바로 강원도 양양에 닿아 붙잡혔고 조정의 조사를 받았습니다. 게임에서는 부산포에 먼저 들렀다가 뇌헌의 밀고로 양양 관아로 보내지는 순서로 구성했습니다.<br>
       · 장한상 수토 기록을 안용복 일행이 자료 카드로 지니고 일본 관리와 논박하는 구성, 유일부·뇌헌의 성격과 대사, 시간문과 시간 나침반, 생태 조사 장면은 학습을 위한 창작입니다.</div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
-      <button class="btn" id="e-dex">도감·대원증 보기</button>
-      <button class="btn" id="e-print">대원증·도감 PDF 저장</button>
+      <button class="btn" id="e-dex">도감 보기</button>
+      <button class="btn" id="e-print">여권 펼치기</button>
       <button class="btn red" id="e-again">처음부터 다시</button>
-    </div><p class="pdf-note">태블릿에서는 기기의 인쇄 화면이 열리며, 그곳에서 PDF 저장 또는 공유를 선택할 수 있습니다.</p></div>`;
+    </div></div>`;
   $("#ending").classList.remove("hide");
-  drawRoute();
+  $("#route-map").onclick=openJourneyMap;
   $("#e-dex").onclick=openDex;
-  $("#e-print").onclick=printExplorerPack;
+  $("#e-print").onclick=openPassport;$("#e-passport-mini").onclick=openPassport;
   $("#e-again").onclick=()=>location.reload();
+}
+/* v17 · 엔딩 여정 지도: 미리 받아 두었다가(양양 도착 때) 그림 한 장으로 보여 준다 */
+let JOURNEY_IMG=null;
+function preloadJourneyMap(){if(JOURNEY_IMG)return;JOURNEY_IMG=new Image();JOURNEY_IMG.decoding="async";JOURNEY_IMG.src="assets/journey-map.webp";if(JOURNEY_IMG.decode)JOURNEY_IMG.decode().catch(()=>{});}
+function openJourneyMap(){
+  const z=document.createElement("div");z.id="map-zoom";z.setAttribute("role","dialog");z.setAttribute("aria-label","안용복의 독도 수호 여정 지도 크게 보기");
+  z.innerHTML=`<img src="assets/journey-map.webp" alt="안용복의 독도 수호 여정 지도(1696년)"><span>화면을 누르면 닫힙니다</span>`;
+  z.onclick=()=>z.remove();$("#stage").appendChild(z);
 }
 function drawRoute(){
   const c=$("#route"); if(!c) return;

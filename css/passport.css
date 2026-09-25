@@ -1,0 +1,228 @@
+/* ==========================================================
+   독도 시간탐험대 v18 · 시간탐험대 여권
+   한 장(.pp-sheet) = 펼친 두 쪽(250:176). 쪽(.pp-page)과 표지(.pp-cover)는
+   각자 컨테이너라서 안쪽 크기를 cqw(자기 너비의 1%)로 잡는다. 화면과 PDF가 같은 비율로 커지고 줄어든다.
+   ========================================================== */
+:root{
+  --pp-navy:#1c2a4d; --pp-navy-2:#15213f; --pp-gold:#d8b769; --pp-gold-2:#b8913f;
+  --pp-ink-blue:#1c3a92; --pp-print:#1f2d52; --pp-label:#4c6290;
+  --pp-hand:"Nanum Pen Script","나눔손글씨 펜","Gaegu",cursive;
+  --pp-latin:Georgia,"Times New Roman","Noto Serif",serif;
+  --pp-mono:"OCR B","OCR-B","Courier New",Courier,monospace;
+}
+
+/* ---------- 한 장 ---------- */
+.pp-sheet{position:absolute;inset:0;container-type:inline-size;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pp-sheet[hidden]{display:none!important}
+.pp-spread{background:linear-gradient(90deg,var(--pp-navy-2),var(--pp-navy) 48%,#0f1831 50%,var(--pp-navy) 52%,var(--pp-navy-2));border-radius:1.5cqw}
+
+/* ---------- 표지 · 뒤표지 ---------- */
+.pp-cover{position:absolute;top:0;height:100%;width:100%;overflow:hidden;container-type:inline-size;color:var(--pp-gold);
+  background:radial-gradient(120% 85% at 32% 18%,#2d4170 0,var(--pp-navy) 52%,var(--pp-navy-2) 100%);
+  border-radius:3.4%/2.4%;box-shadow:0 1.2cqw 3cqw rgba(0,0,0,.28),inset 0 0 0 .5cqw rgba(255,255,255,.035)}
+.pp-closed>.pp-cover{left:25cqw;width:50cqw}
+.pp-cover-grain{position:absolute;inset:0;background:url("../assets/passport-leather.png") 0 0/22cqw auto repeat;opacity:.85;pointer-events:none}
+.pp-front:after,.pp-back:after{content:"";position:absolute;top:0;bottom:0;width:1.1cqw;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(255,255,255,.07) 60%,transparent)}
+.pp-front:after{left:6.5%}.pp-back:after{right:6.5%;transform:scaleX(-1)}
+.pp-front:before,.pp-back:before{content:"";position:absolute;top:0;bottom:0;width:7%;pointer-events:none}
+.pp-front:before{left:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent)}
+.pp-back:before{right:0;background:linear-gradient(-90deg,rgba(0,0,0,.35),transparent)}
+.pp-cover-title{position:absolute;left:0;right:0;top:11.5%;text-align:center;text-shadow:0 .25cqw 0 rgba(0,0,0,.4)}
+.pp-cover-title b{display:block;font:400 8.4cqw/1.1 var(--display);letter-spacing:.06em;color:#e4c67c}
+.pp-cover-title span{display:block;font:400 4.1cqw/1.35 var(--pp-latin);letter-spacing:.2em;margin-top:.4cqw;color:#dcbd72}
+.pp-cover-title span+span{margin-top:0}
+.pp-front .pp-emblem{position:absolute;left:24cqw;width:52cqw;top:37%;filter:drop-shadow(0 .35cqw 0 rgba(0,0,0,.35))}
+.pp-ribbon{font:700 14px var(--ui);letter-spacing:3px}
+.pp-cover-chip{position:absolute;left:0;right:0;bottom:8.5%;display:grid;place-items:center;color:#dcbd72}
+.pp-chip{width:15cqw;height:auto;display:block}
+.pp-back-emboss{position:absolute;left:28cqw;width:44cqw;top:32%;opacity:.95;filter:drop-shadow(0 .3cqw 0 rgba(255,255,255,.07))}
+.pp-back-emboss .pp-emblem{width:100%;height:auto;display:block}
+.pp-back-line{position:absolute;left:0;right:0;bottom:8%;margin:0;text-align:center;font:400 3.3cqw var(--pp-latin);letter-spacing:.24em;color:#caa75a}
+
+/* ---------- 속지 ---------- */
+.pp-page{position:absolute;top:.9cqw;bottom:.9cqw;width:calc(50cqw - .9cqw);overflow:hidden;container-type:inline-size;color:var(--pp-print);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='48' viewBox='0 0 120 48'%3E%3Cg fill='none' stroke='%236f9c91' stroke-width='.55' opacity='.42'%3E%3Cpath d='M0 24C15 8 45 8 60 24S105 40 120 24'/%3E%3Cpath d='M0 24C15 40 45 40 60 24S105 8 120 24'/%3E%3Cpath d='M0 0C15 16 45 16 60 0S105-16 120 0'/%3E%3Cpath d='M0 48C15 32 45 32 60 48S105 64 120 48'/%3E%3C/g%3E%3C/svg%3E") 0 0/24% auto repeat,
+    radial-gradient(70% 55% at 50% 48%,rgba(255,255,255,.7),rgba(255,255,255,0) 72%),
+    linear-gradient(180deg,#eef4ee,#e1ebe6)}
+.pp-page:before{content:"";position:absolute;left:20%;right:20%;top:40%;aspect-ratio:2/1;pointer-events:none;opacity:.05;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Cpath d='M18 78 L52 22 L66 8 L80 26 L96 78Z M104 78 L124 44 L142 30 L160 42 L182 78Z' fill='%23174d5c'/%3E%3Cpath d='M6 86 q12-8 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0' fill='none' stroke='%23174d5c' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.pp-left{left:.9cqw;border-radius:1cqw 0 0 1cqw;box-shadow:-.18cqw 0 0 #d4dfd8,-.36cqw 0 0 #c3cfc9,-.54cqw 0 0 #d4dfd8}
+.pp-right{right:.9cqw;border-radius:0 1cqw 1cqw 0;box-shadow:.18cqw 0 0 #d4dfd8,.36cqw 0 0 #c3cfc9,.54cqw 0 0 #d4dfd8}
+.pp-left:after,.pp-right:after{content:"";position:absolute;top:0;bottom:0;width:9%;pointer-events:none;z-index:4}
+.pp-left:after{right:0;background:linear-gradient(-90deg,rgba(20,40,50,.2),rgba(20,40,50,0))}
+.pp-right:after{left:0;background:linear-gradient(90deg,rgba(20,40,50,.22),rgba(20,40,50,0))}
+.pp-gutter{position:absolute;left:48cqw;width:4cqw;top:.9cqw;bottom:.9cqw;z-index:5;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(10,25,35,.14) 40%,rgba(10,25,35,.26) 50%,rgba(10,25,35,.14) 60%,transparent)}
+.pp-head{position:absolute;left:6cqw;right:6cqw;top:4.6cqw;display:flex;justify-content:space-between;align-items:baseline;gap:3cqw;
+  padding-bottom:1.3cqw;border-bottom:.28cqw solid rgba(31,45,82,.32);font:700 2.35cqw var(--ui);color:#355083;letter-spacing:.03em;white-space:nowrap}
+.pp-head b{font:400 3.1cqw var(--display);color:var(--pp-print);letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
+.pp-no{position:absolute;bottom:3.4cqw;font:700 2.4cqw var(--ui);color:#5a74a0}
+.pp-left .pp-no{left:6cqw}.pp-right .pp-no{right:6cqw}
+.pp-hand{font-family:var(--pp-hand);color:var(--pp-ink-blue);font-weight:400}
+
+/* 안내 쪽 */
+.pp-notice{display:flex;flex-direction:column;justify-content:center;text-align:center;padding:0 8.5cqw 22cqw}
+.pp-notice-emblem{width:30cqw;margin:0 auto}.pp-notice-emblem .pp-emblem{display:block;width:100%;height:auto}
+.pp-notice-ko{margin:7cqw 0 0;font:4cqw/1.85 var(--serif);word-break:keep-all}
+.pp-notice-en{margin:5.5cqw 0 0;font:italic 3cqw/1.6 var(--pp-latin);color:#3d5582}
+.pp-notice-sign{position:absolute;left:0;right:0;bottom:13cqw;display:flex;justify-content:center;align-items:center;gap:3cqw;font:700 3.2cqw var(--serif)}
+.pp-seal-sq{display:grid;place-items:center;width:12.5cqw;height:12.5cqw;border:.75cqw solid #b83227;border-radius:1cqw;color:#b83227;
+  font:400 3.7cqw/1.08 var(--display);font-style:normal;transform:rotate(-5deg);opacity:.86;mix-blend-mode:multiply}
+
+/* 인적사항 쪽 */
+.pp-photo{position:absolute;left:6cqw;top:13.5cqw;width:31cqw;height:40cqw;overflow:hidden;background:linear-gradient(#edf2f3,#d6e0e4);border:.25cqw solid rgba(31,45,82,.28)}
+.pp-photo i,.pp-ghost i{position:absolute;left:-15%;bottom:0;width:130%;aspect-ratio:1;background:url("../assets/portraits-main.png") 0% 50%/300% 300% no-repeat}
+.pp-fields{position:absolute;left:41cqw;right:6cqw;top:13cqw;display:grid;gap:1.7cqw}
+.pp-f{min-width:0}
+.pp-f small{display:block;font:600 1.95cqw/1.3 var(--ui);color:var(--pp-label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-f b{display:block;font:700 3cqw/1.25 var(--ui);color:#161f36;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+.pp-f3{display:grid;grid-template-columns:.6fr .7fr 1.5fr;gap:1.6cqw;align-items:end}
+.pp-f3 .pp-f small{white-space:normal}
+.pp-f-ko b{font:400 4.3cqw/1.15 var(--display);letter-spacing:.04em}
+.pp-fields2{position:absolute;left:6cqw;right:6cqw;top:58cqw;display:grid;grid-template-columns:1fr 1fr;gap:2.3cqw 4cqw}
+.pp-f-wide{grid-column:1/-1}
+.pp-sign{position:absolute;left:6cqw;top:85cqw;width:54cqw}
+.pp-sign small{display:block;font:600 1.95cqw var(--ui);color:var(--pp-label)}
+.pp-sign .pp-hand{display:block;font-size:10cqw;line-height:1.05;padding:0 2cqw;border-bottom:.25cqw solid rgba(31,45,82,.35);transform:rotate(-3deg);transform-origin:left bottom;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.pp-ghost{position:absolute;right:7cqw;top:83cqw;width:18cqw;height:23cqw;overflow:hidden;opacity:.3;filter:grayscale(1) contrast(1.15)}
+.pp-ghost:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(238,244,238,.7) 0 .35cqw,transparent .35cqw .8cqw)}
+.pp-seal-round{position:absolute;left:57cqw;top:85cqw;width:21cqw;aspect-ratio:1;border-radius:50%;border:1.1cqw double #b3302b;color:#b3302b;display:grid;place-content:center;
+  text-align:center;transform:rotate(-13deg);opacity:.85;mix-blend-mode:multiply;z-index:3}
+.pp-seal-round b{font:400 3.7cqw/1.1 var(--display)}.pp-seal-round span{font:800 2.5cqw/1.3 var(--ui)}.pp-seal-round small{font:700 1.5cqw var(--ui);letter-spacing:.1em}
+.pp-mrz{position:absolute;left:6cqw;width:88cqw;bottom:9cqw;height:auto;display:block}
+.pp-mrz text{font:600 15.5px var(--pp-mono);fill:#18203a}
+
+/* 여정 지도 */
+.pp-map{position:absolute;left:4.2cqw;right:4.2cqw;top:8cqw;margin:0;z-index:2;cursor:zoom-in}
+.pp-map img{display:block;width:100%;height:auto;border-radius:.3cqw;box-shadow:0 0 0 .18cqw rgba(92,70,40,.5)}
+.pp-mapsheet .pp-gutter{z-index:6}
+.pp-route{position:absolute;left:8.5cqw;right:7cqw;top:81cqw;margin:0;padding:0;list-style:none;counter-reset:pp}
+.pp-route li{position:relative;counter-increment:pp;display:flex;align-items:baseline;gap:2cqw;padding:0 0 2.35cqw 7.5cqw;font:3.15cqw/1.3 var(--serif)}
+.pp-route li:before{content:counter(pp);position:absolute;left:0;top:-.15cqw;width:4.8cqw;height:4.8cqw;border-radius:50%;display:grid;place-items:center;
+  background:#b3302b;color:#fff;font:800 2.5cqw/4.8cqw var(--ui);text-align:center}
+.pp-route li:not(:last-child):after{content:"";position:absolute;left:2.25cqw;top:4.8cqw;bottom:-.1cqw;width:.3cqw;background:repeating-linear-gradient(#b3302b 0 .9cqw,transparent .9cqw 1.6cqw)}
+.pp-route small{font:700 2.2cqw var(--ui);color:#5a74a0}
+.pp-map-cap{position:absolute;left:7cqw;right:7cqw;top:80.5cqw;margin:0;font:2.75cqw/1.72 var(--serif);word-break:keep-all}
+.pp-map-cap b{font:400 3.6cqw var(--display);color:var(--pp-print)}
+
+/* ---------- 도장 ---------- */
+.pp-stamp{position:absolute;color:var(--ink);opacity:.9;mix-blend-mode:multiply;transform:translate(-50%,-50%) rotate(var(--r));z-index:2}
+.pp-stamp>svg{display:block;width:100%;height:auto;overflow:visible}
+.pp-stamp text{fill:currentColor;font-family:var(--ui);font-weight:800;text-anchor:middle}
+.pp-t-arc{font-size:7.1px;letter-spacing:.7px}
+.pp-t-sep{font-size:5px}
+.pp-stamp text.pp-ta-s{text-anchor:start}.pp-stamp text.pp-ta-e{text-anchor:end}
+.pp-s-oct .pp-t-sep{font-size:6.4px;font-family:var(--display);font-weight:400}
+.pp-t-name{font-size:8.2px;font-weight:900}
+.pp-t-star{font-size:5.6px;letter-spacing:.8px}
+.pp-t-head{font-size:6.8px}
+.pp-t-big{font-weight:900}
+.pp-t-small{font-size:6.3px;font-weight:700}
+.pp-t-han{font-family:var(--display)!important;font-weight:400!important;font-size:37px}
+.pp-empty{position:absolute;left:0;right:0;top:62cqw;text-align:center;font:3cqw var(--serif);color:#6b7fa3}
+.pp-fresh .pp-stamp{opacity:0}
+.pp-drop .pp-stamp{animation:ppStampIn .46s var(--d) both}
+@keyframes ppStampIn{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--r)) scale(1.65)}
+  55%{opacity:1;transform:translate(-50%,-50%) rotate(var(--r)) scale(.94)}
+  100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}}
+
+/* ---------- 기재사항 ---------- */
+.pp-e-points{position:absolute;left:8cqw;right:8cqw;top:15cqw;height:36cqw;color:var(--pp-ink-blue)}
+.pp-e-points>small{display:block;font:800 2.6cqw var(--ui);color:var(--pp-label);letter-spacing:.04em}
+.pp-e-num{position:absolute;left:10cqw;top:6cqw;display:inline-block;transform:rotate(-3deg)}
+.pp-e-big{display:block;font-size:17cqw;line-height:1;white-space:nowrap;padding:0 1cqw}
+.pp-e-ring{position:absolute;left:-12%;top:-24%;width:126%;height:150%;opacity:.72;color:var(--pp-ink-blue);overflow:visible}
+.pp-e-ring path{stroke-width:.55cqw}
+.pp-e-sub{position:absolute;left:13cqw;top:27cqw;font-size:5.8cqw;transform:rotate(-1.5deg);white-space:nowrap}
+.pp-e-lines{position:absolute;left:8cqw;right:8cqw;top:56cqw;margin:0;padding:0;list-style:none}
+.pp-e-lines li{font-size:6.6cqw;line-height:1.08;padding:1.5cqw 1cqw .5cqw;border-bottom:.22cqw dashed rgba(31,45,82,.28);white-space:nowrap}
+.pp-e-lines li:nth-child(odd){transform:rotate(-.8deg)}.pp-e-lines li:nth-child(even){transform:rotate(.5deg)}
+.pp-e-lines small{display:block;font-size:4.9cqw;color:#2e4ea3;padding-top:.4cqw}
+.pp-e-confirm{position:absolute;left:8cqw;right:8cqw;top:101cqw}
+.pp-e-confirm>.pp-hand{display:block;font-size:6cqw;line-height:1.2}
+.pp-e-date{transform:rotate(-1deg)}
+.pp-e-by{position:absolute;right:0;top:9cqw;display:flex;align-items:center;gap:2cqw}
+.pp-e-by small{font:700 2.3cqw var(--ui);color:var(--pp-label)}
+.pp-e-by .pp-hand{font-size:9cqw;transform:rotate(-4deg)}
+.pp-seal-mini{display:grid;place-items:center;width:10cqw;height:10cqw;margin-left:-5cqw;border:.6cqw solid #b83227;border-radius:50%;color:#b83227;
+  font:400 3cqw/1.05 var(--display);font-style:normal;transform:rotate(10deg);opacity:.85;mix-blend-mode:multiply}
+
+/* ---------- 메모 ---------- */
+.pp-memo-hint{position:absolute;left:8cqw;right:8cqw;top:12.8cqw;margin:0;font:2.7cqw/1.5 var(--serif);color:#5a6f96;word-break:keep-all}
+.pp-memo-text{position:absolute;left:7cqw;right:7cqw;top:19cqw;height:106.6cqw;margin:0;padding:0 1.2cqw;box-sizing:border-box;border:0;border-radius:0;outline:none;resize:none;
+  font-size:6.4cqw;line-height:8.2cqw;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;overflow:hidden;background-color:transparent;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(8.2cqw - .24cqw),rgba(31,45,82,.3) calc(8.2cqw - .24cqw),rgba(31,45,82,.3) 8.2cqw);
+  background-attachment:local;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+.pp-memo-text::placeholder{color:rgba(28,58,146,.34)}
+textarea.pp-memo-text:focus-visible{box-shadow:0 0 0 .4cqw rgba(28,58,146,.22)}
+
+/* ---------- 작은 여권(엔딩 · 도감 · 발급 창) ---------- */
+.pp-mini{position:relative;display:block;flex:none;width:clamp(118px,20vw,168px);aspect-ratio:50/70.4;padding:0;border:0;background:none;cursor:pointer;
+  container-type:inline-size;border-radius:7px;box-shadow:0 14px 28px rgba(0,0,0,.5);transform:rotate(-3deg);transition:transform .2s ease}
+.pp-mini .pp-cover{position:absolute;inset:0;box-shadow:none}
+.pp-mini:hover{transform:rotate(-1deg) translateY(-3px)}
+.pp-mini:focus-visible{outline:3px solid var(--gold);outline-offset:5px}
+.pp-mini-still{cursor:default;margin:6px auto 14px;width:clamp(110px,18vw,150px)}
+.pp-issued{display:flex;align-items:center;justify-content:center;gap:26px;max-width:640px;margin:28px auto;text-align:left}
+.pp-issued>div>b{display:block;font:400 clamp(20px,3.3vw,28px) var(--display);color:var(--paper)}
+.pp-issued>div>span{display:block;margin-top:7px;font:clamp(13px,1.9vw,16px)/1.7 var(--serif);color:var(--paper-2);word-break:keep-all}
+.dex-passport{display:flex;align-items:center;gap:22px;max-width:640px;margin:0 auto;padding:6px 4px}
+.dex-passport .pp-mini{width:clamp(96px,15vw,128px)}
+.dex-passport>div>b{display:block;font:400 clamp(18px,2.8vw,24px) var(--display);color:var(--paper)}
+.dex-passport>div>span{display:block;margin-top:6px;font:14px/1.65 var(--serif);color:var(--paper-2);word-break:keep-all}
+
+/* ---------- 여권 보기 창 ---------- */
+#passport{position:absolute;inset:0;z-index:135;display:flex;flex-direction:column;color:var(--paper);
+  background:radial-gradient(85% 70% at 50% 46%,#153f52 0,#0a2230 58%,#06131b 100%)}
+#passport.hide{display:none}
+.pp-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
+.pp-bar>b{font:400 clamp(17px,2.4vw,22px) var(--display);white-space:nowrap}
+#pp-where{font:13px var(--serif);color:var(--paper-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-actions{margin-left:auto;display:flex;gap:8px;flex:none}
+#pp-save{background:#d2ad57;color:#172340;border-color:#f0d58e}
+#pp-save:disabled{opacity:.7}
+.pp-desk{flex:1;min-height:0;display:grid;place-items:center;padding:2px 8px;overflow:hidden}
+.pp-view{position:relative}
+.pp-single .pp-view{overflow:hidden;border-radius:10px}
+.pp-book{position:relative;aspect-ratio:250/176;perspective:2600px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.pp-book.pp-slide{transition:transform .35s ease}
+.pp-single .pp-book>.pp-spread{box-shadow:none}
+.pp-book>.pp-spread{box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.pp-fx{position:absolute;inset:0}
+.pp-half-l{clip-path:inset(0 50% 0 0)}.pp-half-r{clip-path:inset(0 0 0 50%)}
+.pp-book>.pp-fx.pp-half-l,.pp-book>.pp-fx.pp-half-r{z-index:2;box-shadow:none}
+.pp-flip{z-index:3;transform-style:preserve-3d;transform-origin:50% 50%}
+.pp-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;box-shadow:none!important}
+.pp-face-back{transform:rotateY(180deg)}
+.pp-fade-in{animation:ppFadeIn .36s ease both;z-index:2}
+.pp-fx-out{animation:ppFadeOut .3s ease both}
+@keyframes ppFadeIn{from{opacity:0;transform:scale(.965)}to{opacity:1;transform:none}}
+@keyframes ppFadeOut{from{opacity:1}to{opacity:0}}
+.pp-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding:6px 14px 2px}
+.pp-navbtn{min-width:96px;padding:9px 14px;border:2px solid var(--paper-3);border-radius:3px;background:rgba(10,32,44,.9);color:var(--paper);font:700 14px var(--ui);cursor:pointer}
+.pp-navbtn:disabled{opacity:.35;cursor:default}
+.pp-navbtn:focus-visible,.pp-dot:focus-visible,.pp-actions .ibtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.pp-dots{display:flex;gap:9px}
+.pp-dot{width:12px;height:12px;padding:0;border-radius:50%;border:2px solid var(--paper-3);background:transparent;cursor:pointer}
+.pp-dot[aria-current="true"]{background:var(--gold);border-color:var(--gold)}
+.pp-foot{margin:0;padding:4px 14px calc(8px + env(safe-area-inset-bottom));text-align:center;font:12px/1.5 var(--serif);color:var(--paper-3)}
+@media (max-height:520px){.pp-bar{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:4px}.pp-foot{display:none}.pp-navbtn{padding:6px 10px;min-width:80px}}
+@media (max-width:560px){#pp-where{display:none}.pp-navbtn{min-width:0}.pp-dots{gap:6px}}
+@media (prefers-reduced-motion:reduce){.pp-drop .pp-stamp{animation:none}.pp-mini{transition:none}}
+
+/* ---------- PDF(인쇄): 한 장 = B5 가로(250×176mm) 한 쪽 ---------- */
+#print-pack{display:none}
+@media print{
+  @page{size:250mm 176mm;margin:0}
+  html,body{width:auto!important;height:auto!important;margin:0!important;overflow:visible!important;background:#fff!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #stage{display:none!important}
+  #print-pack{display:block!important;background:#fff}
+  .pp-print .pp-sheet{position:relative;inset:auto;width:100%;aspect-ratio:250/175.4;overflow:hidden;break-inside:avoid;break-after:page;page-break-after:always}
+  .pp-print .pp-sheet:last-child{break-after:auto;page-break-after:auto}
+  .pp-print .pp-closed>.pp-cover{top:3.5%;height:93%;left:26.75cqw;width:46.5cqw}
+  .pp-print .pp-stamp{animation:none!important;opacity:.9}
+  .pp-print .pp-map{cursor:default}
+}
